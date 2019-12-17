@@ -140,8 +140,6 @@
             repositories:
                - name: cloudve
                  url: https://raw.githubusercontent.com/CloudVE/helm-charts/master/
-               - name: jupyterhub
-                 url: https://jupyterhub.github.io/helm-chart/
             charts:
               cvmfs:
                 name: cloudve/galaxy-cvmfs-csi
@@ -203,16 +201,70 @@
                   configs:
                     galaxy.yml:
                       galaxy:
-                        enable_oidc: true
-                        oidc_config_file: /galaxy/server/config/oidc_config.xml
-                        oidc_backends_config_file: /galaxy/server/config/oidc_backends_config.xml
-                    oidc_config.xml: |
+                        error_email_to: support@galactic-core.com
+                        email_from: support@galactic-core.com
+                        instance_resource_url: https://galactic-core.com/
+                        ga_code:
+                        enable_old_display_applications: false
+                        interactivetools_enable: false
+                        visualizations_visible: false
+                        brand:
+                        user_preferences_extra_conf_path:
+                        logo_url: /
+                        logo_src: https://galactic-core.com/logo.svg
+                        logo_custom:
+                        helpsite_url: https://galactic-core.com/
+                        wiki_url: https://galactic-core.com/
+                        support_url: mailto:support@galactic-core.com
+                        citation_url: https://galactic-core.com/
+                        search_url: https://galactic-core.com/
+                        terms_url: https://galactic-core.com/
+                        qa_url: https://galactic-core.com/
+                        require_login: true
+                        allow_user_creation: false
+                        enable_beta_gdpr: true
+                        enable_tool_tags: true
+                        auth_config_file: auth_conf.xml
+                    auth_conf.xml: |
                       <?xml version="1.0"?>
-                      <OIDC>
-                          <Setter Property="VERIFY_SSL" Value="False" Type="bool"/>
-                          <Setter Property="REQUESTS_TIMEOUT" Value="3600" Type="float"/>
-                          <Setter Property="ID_TOKEN_MAX_AGE" Value="3600" Type="float"/>
-                      </OIDC>
+                      <auth>
+                      </auth>
+                  extraFileMappings:
+                    /galaxy/server/static/welcome.html:
+                      useSecret: false
+                      applyToJob: false
+                      applyToWeb: true
+                      content: |
+                        <!DOCTYPE html>
+                        <html lang="en">
+                            <head>
+                                <meta charset="utf-8">
+                                <link rel="stylesheet" href="style/base.css" type="text/css" />
+                            </head>
+                            <body class="m-0">
+                                <div class="py-4">
+                                    <div class="container">
+                                        <h1>Welcome to <strong>Galaxy Pro</strong></h1>
+                                        <br>
+                                        <a target="_blank" href="https://galactic-core.com" class="btn btn-primary">Documentation »</a>
+                                        <a target="_blank" href="mailto:support@galactic-core.com" class="btn btn-primary">Support »</a>
+                                    </div>
+                                    <br>
+                                    {{- if .Values.influxdb.enabled }}
+                                    <div class="container">
+                                        <iframe width="100%" height="300px" frameborder="0" marginheight="0" marginwidth="0"
+                                            src="/grafana/d/gxy_general_stats_{{ .Release.Name }}/galaxy-overview?refresh=60s&orgId=1&kiosk&theme=light"></iframe>
+                                    </div>
+                                    {{- end }}
+                                </div>
+                                <div class="container">
+                                    <footer class="text-center">
+                                        <a target="_blank" href="https://galactic-core.com">Terms and Conditions.</a>
+                                        <p>Copyright © 2019 GalaxyWorks LLC. All rights reserved. Galaxy v{{ .Chart.AppVersion }}, Helm Chart v{{ .Chart.Version }}</p>
+                                    </footer>
+                                </div>
+                            </body>
+                        </html>
                   persistence:
                     storageClass: efs
                     size: 1100Gi
