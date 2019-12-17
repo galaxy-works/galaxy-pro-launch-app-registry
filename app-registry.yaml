@@ -1,0 +1,334 @@
+- slug: gpro
+  name: gpro
+  status: LIVE
+  summary: |-
+    Galaxy Pro - A commercial grade Galaxy genomics workbench.
+  maintainer: Galactic Core Team
+  description: |-
+    Galaxy Pro offers Galaxy as a fully managed, commercial-grade subscription service with enhanced usage capabilities,
+    increased security, and quality of service guarantees.
+  info_url: https://galactic-core.com
+  icon_url: https://galactic-core.com/logo.svg
+  display_order: 1000
+  default_version: GC Pro Alpha (v0.1)
+  default_launch_config:
+    config_cloudlaunch:
+      firewall:
+      - rules:
+        - cidr: 0.0.0.0/0
+          from: '80'
+          protocol: tcp
+          to: '80'
+        - cidr: 0.0.0.0/0
+          from: '20'
+          protocol: tcp
+          to: '22'
+        - cidr: 0.0.0.0/0
+          from: '22'
+          protocol: tcp
+          to: '22'
+        - cidr: 0.0.0.0/0
+          from: '30000'
+          protocol: tcp
+          to: '30100'
+        - cidr: 0.0.0.0/0
+          from: '1'
+          protocol: tcp
+          src_group: cloudlaunch-gpro
+          to: '65535'
+        securityGroup: cloudlaunch-gpro
+      provider_settings:
+        ebsOptimised: true
+      vmType: m5.2xlarge
+    config_gvl:
+      config_cloudman:
+        cluster_templates:
+        - filesystem_templates:
+          - name: galaxy
+            roles: galaxyTools,galaxyData
+          - name: galaxyIndices
+            roles: galaxyIndices
+          name: Galaxy
+        - filesystem_templates:
+          - name: galaxy
+            type: transient
+          name: Data
+        masterPostStartScript: |-
+          file:///opt/gvl/scripts/triggers;file:///mnt/galaxy/gvl/poststart.d
+  versions:
+  - version: GC Pro Alpha (v0.1)
+    frontend_component_path: |-
+      app/marketplace/plugins/plugins.module#PluginsModule
+    frontend_component_name: clui-cm2-config
+    backend_component_name: |-
+      cloudlaunch.backend_plugins.cloudman2_app.CloudMan2AppPlugin
+    default_launch_config:
+      config_appliance:
+        inventoryTemplate: |-
+          https://gist.githubusercontent.com/afgane/1651c5c1395400ce8ab97a546293d571/raw/98e1da15a2936bcb23dd5fca1ff88259e9c80f3b/i2
+        repository: https://github.com/CloudVE/ansible-cloudman2
+        runner: ansible
+        sshUser: ubuntu
+      config_cloudlaunch:
+        firewall:
+        - rules:
+          - cidr: 0.0.0.0/0
+            from: '22'
+            protocol: tcp
+            to: '22'
+          - cidr: 0.0.0.0/0
+            from: '80'
+            protocol: tcp
+            to: '80'
+          - cidr: 0.0.0.0/0
+            from: '443'
+            protocol: tcp
+            to: '443'
+          - cidr: 0.0.0.0/0
+            from: '4430'
+            protocol: tcp
+            to: '4430'
+          - cidr: 0.0.0.0/0
+            from: '6443'
+            protocol: tcp
+            to: '6443'
+          - cidr: 0.0.0.0/0
+            from: '2379'
+            protocol: tcp
+            to: '2380'
+          - cidr: 0.0.0.0/0
+            from: '10250'
+            protocol: tcp
+            to: '10250'
+          - cidr: 0.0.0.0/0
+            from: '10251'
+            protocol: tcp
+            to: '10251'
+          - cidr: 0.0.0.0/0
+            from: '10252'
+            protocol: tcp
+            to: '10252'
+          - cidr: 0.0.0.0/0
+            from: '10256'
+            protocol: tcp
+            to: '10256'
+          - cidr: 0.0.0.0/0
+            from: '30000'
+            protocol: tcp
+            to: '32767'
+          - from: '1'
+            protocol: tcp
+            src_group: cloudlaunch-cm2
+            to: '65535'
+          - from: '1'
+            protocol: udp
+            src_group: cloudlaunch-cm2
+            to: '65535'
+          securityGroup: cloudlaunch-cm2
+        vmType: m1.medium
+      config_cloudman2:
+        cm_boot_image: galacticcore/galaxy-pro-boot
+        cm_helm_values: |
+          cluster_type: KUBE_RANCHER
+          rancher_url: "https://{{ rancher_server }}:{{ rancher_port }}"
+          rancher_api_key: "{{ token }}"
+          rancher_cluster_id: "{{ cluster_id }}"
+          rancher_project_id: "{{ project_id }}"
+          cm_initial_cluster_data: "{{ cm_initial_cluster_data|default('') }}"
+
+          helmsman_config:
+            repositories:
+               - name: cloudve
+                 url: https://raw.githubusercontent.com/CloudVE/helm-charts/master/
+               - name: jupyterhub
+                 url: https://jupyterhub.github.io/helm-chart/
+            charts:
+              cvmfs:
+                name: cloudve/galaxy-cvmfs-csi
+                namespace: cvmfs
+                values:
+                  cache:
+                    size: 30000
+              galaxy:
+                name: cloudve/galaxy
+                namespace: default
+                oidc_client:
+                  client_secret: {{ random_client_secret }}
+                  redirect_uris:
+                    - '{{ '{{' }} include "cloudman.root_url" . {{ '}}{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback'
+                tplValues:
+                  configs:
+                    oidc_backends_config.xml: |
+                      <?xml version="1.0"?>
+                      <OIDC>
+                          <provider name="custos">
+                              <url>https://{{ rancher_server }}/auth</url>
+                              <client_id>galaxy-auth</client_id>
+                              <client_secret>{{ '{{' }}.Values.helmsman_config.charts.galaxy.oidc_client.client_secret {{ '}}' }}</client_secret>
+                              <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback</redirect_uri>
+                              <realm>master</realm>
+                          </provider>
+                      </OIDC>
+                values:
+                  resources:
+                    requests:
+                      cpu: 200m
+                      memory: 2500Mi
+                    limits:
+                      cpu: 3000m
+                      memory: 7000Mi
+                  jobs:
+                    rules:
+                      container_mapper_rules.yml: |
+                        mappings:
+                          - tool_ids:
+                              - sort1
+                              - Grouping1
+                            container:
+                              docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                              resource_set: small
+                        resources:
+                          resource_sets:
+                            small:
+                              requests:
+                                cpu: 0.25
+                                memory: 2G
+                              limits:
+                                cpu: 2
+                                memory: 5G
+                          default_resource_set: small
+                  image:
+                    repository: cloudve/galaxy-k8s
+                    tag: 19.09
+                  configs:
+                    galaxy.yml:
+                      galaxy:
+                        enable_oidc: true
+                        oidc_config_file: /galaxy/server/config/oidc_config.xml
+                        oidc_backends_config_file: /galaxy/server/config/oidc_backends_config.xml
+                    oidc_config.xml: |
+                      <?xml version="1.0"?>
+                      <OIDC>
+                          <Setter Property="VERIFY_SSL" Value="False" Type="bool"/>
+                          <Setter Property="REQUESTS_TIMEOUT" Value="3600" Type="float"/>
+                          <Setter Property="ID_TOKEN_MAX_AGE" Value="3600" Type="float"/>
+                      </OIDC>
+                  persistence:
+                    storageClass: efs
+                    size: 1100Gi
+                  postgresql:
+                    persistence:
+                      storageClass: ebs
+                  ingress:
+                    enabled: true
+                    annotations:
+                       kubernetes.io/tls-acme: "true"
+                       cert-manager.io/cluster-issuer: letsencrypt-prod
+                       nginx.ingress.kubernetes.io/secure-backends: "true"
+                    hosts:
+                       - ~
+          {% if not (rancher_server | ipaddr) %}
+                       - "{{ rancher_server }}"
+                    tls:
+                       - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                         hosts:
+                           - "{{ rancher_server }}"
+          {% endif %}
+                    path: /default/galaxy
+
+          cloudlaunch:
+             resources:
+                requests:
+                  cpu: 100m
+                  memory: 500Mi
+                limits:
+                  cpu: 1000m
+                  memory: 3000Mi
+             cloudlaunchserver:
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 1500Mi
+                  limits:
+                    cpu: 1000m
+                    memory: 5000Mi
+                admin_password: "{{ rancher_password }}"
+                postgresql:
+                   persistence:
+                      storageClass: "ebs"
+                ingress:
+                   annotations:
+                      kubernetes.io/tls-acme: "true"
+                      cert-manager.io/cluster-issuer: letsencrypt-prod
+                      nginx.ingress.kubernetes.io/secure-backends: "true"
+                   hosts:
+                      - ~
+          {% if not (rancher_server | ipaddr) %}
+                      - "{{ rancher_server }}"
+                   tls:
+                      - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                        hosts:
+                          - "{{ rancher_server }}"
+          {% endif %}
+             ingress:
+                annotations:
+                   kubernetes.io/tls-acme: "true"
+                   cert-manager.io/cluster-issuer: letsencrypt-prod
+                   nginx.ingress.kubernetes.io/secure-backends: "true"
+                hosts:
+                   - ~
+          {% if not (rancher_server | ipaddr) %}
+                   - "{{ rancher_server }}"
+                tls:
+                   - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                     hosts:
+                       - "{{ rancher_server }}"
+          {% endif %}
+          prometheus:
+             persistence:
+                storageClass: "efs"
+             grafana:
+                domain: "{{ rancher_server }}"
+                ingress:
+                   annotations:
+                      kubernetes.io/tls-acme: "true"
+                      cert-manager.io/cluster-issuer: letsencrypt-prod
+                      nginx.ingress.kubernetes.io/secure-backends: "true"
+                   hosts:
+                      - ~
+          {% if not (rancher_server | ipaddr) %}
+                      - "{{ rancher_server }}"
+                   tls:
+                      - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                        hosts:
+                          - "{{ rancher_server }}"
+          {% endif %}
+          keycloak:
+             keycloak:
+                 resources:
+                   requests:
+                      cpu: 100m
+                      memory: 750Mi
+                   limits:
+                      cpu: 1000m
+                      memory: 2000Mi
+                 password: "{{ rancher_password }}"
+                 ingress:
+                   enabled: true
+                   path: /auth
+                   annotations:
+                      kubernetes.io/tls-acme: "true"
+                      cert-manager.io/cluster-issuer: letsencrypt-prod
+                      nginx.ingress.kubernetes.io/secure-backends: "true"
+                   hosts:
+                      - ~
+          {% if not (rancher_server | ipaddr) %}
+                      - "{{ rancher_server }}"
+                   tls:
+                      - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                        hosts:
+                          - "{{ rancher_server }}"
+          {% endif %}
+          global:
+             domain: "{{ rancher_server }}"
+             deployment_name: "{{ cm_deployment_name }}"
