@@ -192,8 +192,8 @@
                                 cpu: 0.25
                                 memory: 2G
                               limits:
-                                cpu: 2
-                                memory: 5G
+                                cpu: 4
+                                memory: 16G
                           default_resource_set: small
                   image:
                     repository: cloudve/galaxy-k8s
@@ -340,7 +340,14 @@
              persistence:
                 storageClass: "efs"
              grafana:
-                domain: "{{ rancher_server }}"
+                adminPassword: {{ random_client_secret }}
+                grafana.ini:
+                   server:
+                      root_url: "https://{{ rancher_server }}/grafana"
+                   auth.generic_oauth:
+                      auth_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/auth"
+                      token_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/token"
+                      api_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/userinfo"
                 ingress:
                    annotations:
                       kubernetes.io/tls-acme: "true"
