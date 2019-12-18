@@ -388,6 +388,21 @@
                         hosts:
                           - "{{ rancher_server }}"
           {% endif %}
+                 extraInitContainers: |
+                   - name: theme-provider
+                     image: galacticcore/gc-keycloak-theme:latest
+                     imagePullPolicy: IfNotPresent
+                     command:
+                       - sh
+                     args:
+                       - -c
+                       - |
+                         echo "Copying theme..."
+                         cp -R /customtheme/* /theme
+                         echo "done."
+                     volumeMounts:
+                       - name: theme
+                         mountPath: /theme
           global:
              domain: "{{ rancher_server }}"
              deployment_name: "{{ cm_deployment_name }}"
