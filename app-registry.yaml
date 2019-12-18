@@ -196,8 +196,8 @@
                                 memory: 16G
                           default_resource_set: small
                   image:
-                    repository: cloudve/galaxy-k8s
-                    tag: 19.09
+                    repository: galacticcore/galaxy-pro
+                    tag: 19.09-s
                   configs:
                     galaxy.yml:
                       galaxy:
