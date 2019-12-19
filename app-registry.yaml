@@ -1,11 +1,11 @@
-- slug: gpro
-  name: gpro
+- slug: galaxypro
+  name: Galaxy Pro
   status: LIVE
   summary: |-
-    Galaxy Pro - A commercial grade Galaxy genomics workbench.
+    Galaxy Pro - A production grade Galaxy genomics workbench.
   maintainer: Galactic Core Team
   description: |-
-    Galaxy Pro offers Galaxy as a fully managed, commercial-grade subscription service with enhanced usage capabilities,
+    Galaxy Pro offers Galaxy as a fully managed, production-grade subscription service with enhanced usage capabilities,
     increased security, and quality of service guarantees.
   info_url: https://galactic-core.com
   icon_url: https://galactic-core.com/logo.svg
@@ -61,7 +61,7 @@
       app/marketplace/plugins/plugins.module#PluginsModule
     frontend_component_name: clui-cm2-config
     backend_component_name: |-
-      cloudlaunch.backend_plugins.cloudman2_app.CloudMan2AppPlugin
+      galaxy-pro-launch.plugins.galaxy_pro_app.GalaxyProApp
     default_launch_config:
       config_appliance:
         inventoryTemplate: |-
@@ -153,7 +153,7 @@
                 oidc_client:
                   client_secret: {{ random_client_secret }}
                   redirect_uris:
-                    - '{{ '{{' }} include "cloudman.root_url" . {{ '}}{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback'
+                    - '{{'{{'}}include "cloudman.root_url" .{{'}}{{'}}.Values.helmsman_config.charts.galaxy.values.ingress.path{{'}}'}}/authnz/custos/callback'
                 tplValues:
                   configs:
                     oidc_backends_config.xml: |
@@ -168,6 +168,9 @@
                           </provider>
                       </OIDC>
                 values:
+                  webHandlers:
+                    podAnnotations:
+                      backup.velero.io/backup-volumes: galaxy-data
                   resources:
                     requests:
                       cpu: 200m
@@ -226,8 +229,7 @@
                         brand:
                         user_preferences_extra_conf_path:
                         logo_url: /
-                        logo_src: https://galactic-core.com/logo.svg
-                        logo_custom:
+                        logo_custom: https://galactic-core.com/logo.svg
                         helpsite_url: https://galactic-core.com/
                         wiki_url: https://galactic-core.com/
                         support_url: mailto:support@galactic-core.com
@@ -235,11 +237,10 @@
                         search_url: https://galactic-core.com/
                         terms_url: https://galactic-core.com/
                         qa_url: https://galactic-core.com/
-                        require_login: true
                         allow_user_creation: false
                         enable_beta_gdpr: true
                         enable_tool_tags: true
-                        auth_config_file: auth_conf.xml
+                        auth_config_file: config/auth_conf.xml
                     auth_conf.xml: |
                       <?xml version="1.0"?>
                       <auth>
@@ -275,7 +276,7 @@
                                 <div class="container">
                                     <footer class="text-center">
                                         <a target="_blank" href="https://galactic-core.com">Terms and Conditions.</a>
-                                        <p>Copyright © 2019 GalaxyWorks LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
+                                        <p>Copyright © 2019 Galactic Core LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
                                     </footer>
                                 </div>
                             </body>
@@ -284,6 +285,9 @@
                     storageClass: efs
                     size: 1100Gi
                   postgresql:
+                    master:
+                      podAnnotations:
+                        backup.velero.io/backup-volumes: data
                     persistence:
                       storageClass: ebs
                   ingress:
