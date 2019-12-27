@@ -270,7 +270,7 @@
                                         <p>
                                             If you encounter issues with using the service, please
                                             <a target="_blank"
-                                            href="mailto:support@galactic-core.com">reach out us</a>.
+                                            href="mailto:support@galactic-core.com">reach out to us</a>.
                                         </p>
                                         <hr />
                                         {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
