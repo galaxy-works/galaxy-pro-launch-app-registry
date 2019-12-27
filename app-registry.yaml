@@ -261,22 +261,32 @@
                                 <div class="py-4">
                                     <div class="container">
                                         <h1>Welcome to <strong>Galaxy Pro</strong></h1>
-                                        <br>
-                                        <a target="_blank" href="https://galactic-core.com" class="btn btn-primary">Documentation »</a>
-                                        <a target="_blank" href="mailto:support@galactic-core.com" class="btn btn-primary">Support »</a>
+                                        <p>
+                                            Your Galaxy Pro instance is ready for use. Start by
+                                            uploading data and selecting tools from the tool panel on
+                                            the left. You can also run complex pipelines via workflows
+                                            or share data with coleagues and collaborators.
+                                        </p>
+                                        <p>
+                                            If you encounter issues with using the service, please
+                                            <a target="_blank"
+                                            href="mailto:support@galactic-core.com">reach out us</a>.
+                                        </p>
+                                        <hr />
+                                        {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
+                                        <h3>Status dashboard</h3>
+                                        An overview of the current system state and usage.
+                                        <div class="container">
+                                            <iframe width="100%" height="1300px" frameborder="0" marginheight="0" marginwidth="0"
+                                                src="/grafana/d/gxy_general_stats_{{ '{{' }} .Release.Name {{ '}}' }}/galaxy-overview?refresh=60s&orgId=1&kiosk&theme=light"></iframe>
+                                        </div>
+                                        {{ '{{' }}- end {{ '}}' }}
                                     </div>
-                                    <br>
-                                    {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
-                                    <div class="container">
-                                        <iframe width="100%" height="1300px" frameborder="0" marginheight="0" marginwidth="0"
-                                            src="/grafana/d/gxy_general_stats_{{ '{{' }} .Release.Name {{ '}}' }}/galaxy-overview?refresh=60s&orgId=1&kiosk&theme=light"></iframe>
-                                    </div>
-                                    {{ '{{' }}- end {{ '}}' }}
                                 </div>
                                 <div class="container">
                                     <footer class="text-center">
                                         <a target="_blank" href="https://galactic-core.com">Terms and Conditions.</a>
-                                        <p>Copyright © 2019 Galactic Core LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
+                                        <p>Copyright © 2020 Galactic Core LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
                                     </footer>
                                 </div>
                             </body>
