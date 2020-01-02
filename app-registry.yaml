@@ -333,6 +333,8 @@ apps:
                     cpu: 1000m
                     memory: 3000Mi
                cloudlaunchserver:
+                  podAnnotations:
+                    iam.amazonaws.com/role: "{{ cm_deployment_name }}-gxy-pro-cm-node"
                   resources:
                     requests:
                       cpu: 500m
