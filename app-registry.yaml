@@ -1,443 +1,444 @@
-- slug: galaxypro
-  name: Galaxy Pro
-  status: LIVE
-  summary: |-
-    Galaxy Pro - A production grade Galaxy genomics workbench.
-  maintainer: Galactic Core Team
-  description: |-
-    Galaxy Pro offers Galaxy as a fully managed, production-grade subscription service with enhanced usage capabilities,
-    increased security, and quality of service guarantees.
-  info_url: https://galactic-core.com
-  icon_url: https://galactic-core.com/logo.svg
-  display_order: 1000
-  default_version: GC Pro Alpha (v0.1)
-  default_launch_config:
-    config_cloudlaunch:
-      firewall:
-      - rules:
-        - cidr: 0.0.0.0/0
-          from: '80'
-          protocol: tcp
-          to: '80'
-        - cidr: 0.0.0.0/0
-          from: '20'
-          protocol: tcp
-          to: '22'
-        - cidr: 0.0.0.0/0
-          from: '22'
-          protocol: tcp
-          to: '22'
-        - cidr: 0.0.0.0/0
-          from: '30000'
-          protocol: tcp
-          to: '30100'
-        - cidr: 0.0.0.0/0
-          from: '1'
-          protocol: tcp
-          src_group: cloudlaunch-gpro
-          to: '65535'
-        securityGroup: cloudlaunch-gpro
-      provider_settings:
-        ebsOptimised: true
-      vmType: m5.2xlarge
-    config_gvl:
-      config_cloudman:
-        cluster_templates:
-        - filesystem_templates:
-          - name: galaxy
-            roles: galaxyTools,galaxyData
-          - name: galaxyIndices
-            roles: galaxyIndices
-          name: Galaxy
-        - filesystem_templates:
-          - name: galaxy
-            type: transient
-          name: Data
-        masterPostStartScript: |-
-          file:///opt/gvl/scripts/triggers;file:///mnt/galaxy/gvl/poststart.d
-  versions:
-  - version: GC Pro Alpha (v0.1)
-    frontend_component_path: |-
-      app/marketplace/plugins/plugins.module#PluginsModule
-    frontend_component_name: clui-cm2-config
-    backend_component_name: |-
-      galaxy-pro-launch.plugins.galaxy_pro_app.GalaxyProApp
+apps:
+  - slug: galaxypro
+    name: Galaxy Pro
+    status: LIVE
+    summary: |-
+      Galaxy Pro - A production grade Galaxy genomics workbench.
+    maintainer: Galactic Core Team
+    description: |-
+      Galaxy Pro offers Galaxy as a fully managed, production-grade subscription service with enhanced usage capabilities,
+      increased security, and quality of service guarantees.
+    info_url: https://galactic-core.com
+    icon_url: https://galactic-core.com/logo.svg
+    display_order: 1000
+    default_version: GC Pro Alpha (v0.1)
     default_launch_config:
-      config_appliance:
-        inventoryTemplate: |-
-          ${host}
-
-          [all:vars]
-          ansible_ssh_port=22
-          ansible_user='${user}'
-          ansible_ssh_private_key_file=pk
-          ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-        repository: https://github.com/CloudVE/ansible-cloudman2
-        runner: ansible
-        sshUser: ubuntu
       config_cloudlaunch:
         firewall:
         - rules:
-          - cidr: 0.0.0.0/0
-            from: '22'
-            protocol: tcp
-            to: '22'
           - cidr: 0.0.0.0/0
             from: '80'
             protocol: tcp
             to: '80'
           - cidr: 0.0.0.0/0
-            from: '443'
+            from: '20'
             protocol: tcp
-            to: '443'
+            to: '22'
           - cidr: 0.0.0.0/0
-            from: '4430'
+            from: '22'
             protocol: tcp
-            to: '4430'
-          - cidr: 0.0.0.0/0
-            from: '6443'
-            protocol: tcp
-            to: '6443'
-          - cidr: 0.0.0.0/0
-            from: '2379'
-            protocol: tcp
-            to: '2380'
-          - cidr: 0.0.0.0/0
-            from: '10250'
-            protocol: tcp
-            to: '10250'
-          - cidr: 0.0.0.0/0
-            from: '10251'
-            protocol: tcp
-            to: '10251'
-          - cidr: 0.0.0.0/0
-            from: '10252'
-            protocol: tcp
-            to: '10252'
-          - cidr: 0.0.0.0/0
-            from: '10256'
-            protocol: tcp
-            to: '10256'
+            to: '22'
           - cidr: 0.0.0.0/0
             from: '30000'
             protocol: tcp
-            to: '32767'
-          - from: '1'
+            to: '30100'
+          - cidr: 0.0.0.0/0
+            from: '1'
             protocol: tcp
-            src_group: cloudlaunch-cm2
+            src_group: cloudlaunch-gpro
             to: '65535'
-          - from: '1'
-            protocol: udp
-            src_group: cloudlaunch-cm2
-            to: '65535'
-          securityGroup: cloudlaunch-cm2
-        vmType: m1.medium
-      config_cloudman2:
-        cm_boot_image: galacticcore/galaxy-pro-boot
-        cm_helm_values: |
-          cluster_type: KUBE_RANCHER
-          rancher_url: "https://{{ rancher_server }}:{{ rancher_port }}"
-          rancher_api_key: "{{ token }}"
-          rancher_cluster_id: "{{ cluster_id }}"
-          rancher_project_id: "{{ project_id }}"
-          cm_initial_cluster_data: "{{ cm_initial_cluster_data|default('') }}"
+          securityGroup: cloudlaunch-gpro
+        provider_settings:
+          ebsOptimised: true
+        vmType: m5.2xlarge
+      config_gvl:
+        config_cloudman:
+          cluster_templates:
+          - filesystem_templates:
+            - name: galaxy
+              roles: galaxyTools,galaxyData
+            - name: galaxyIndices
+              roles: galaxyIndices
+            name: Galaxy
+          - filesystem_templates:
+            - name: galaxy
+              type: transient
+            name: Data
+          masterPostStartScript: |-
+            file:///opt/gvl/scripts/triggers;file:///mnt/galaxy/gvl/poststart.d
+    versions:
+    - version: GC Pro Alpha (v0.1)
+      frontend_component_path: |-
+        app/marketplace/plugins/plugins.module#PluginsModule
+      frontend_component_name: clui-cm2-config
+      backend_component_name: |-
+        galaxy-pro-launch.plugins.galaxy_pro_app.GalaxyProApp
+      default_launch_config:
+        config_appliance:
+          inventoryTemplate: |-
+            ${host}
 
-          helmsman_config:
-            repositories:
-               - name: cloudve
-                 url: https://raw.githubusercontent.com/CloudVE/helm-charts/master/
-            charts:
-              cvmfs:
-                name: cloudve/galaxy-cvmfs-csi
-                namespace: cvmfs
-                values:
-                  cache:
-                    size: 30000
-              galaxy:
-                name: cloudve/galaxy
-                namespace: default
-                oidc_client:
-                  client_secret: {{ random_client_secret }}
-                  redirect_uris:
-                    - '{{'{{'}}include "cloudman.root_url" .{{'}}{{'}}.Values.helmsman_config.charts.galaxy.values.ingress.path{{'}}'}}/authnz/custos/callback'
-                tplValues:
-                  configs:
-                    oidc_backends_config.xml: |
-                      <?xml version="1.0"?>
-                      <OIDC>
-                          <provider name="custos">
-                              <url>https://{{ rancher_server }}/auth</url>
-                              <client_id>galaxy-auth</client_id>
-                              <client_secret>{{ '{{' }}.Values.helmsman_config.charts.galaxy.oidc_client.client_secret {{ '}}' }}</client_secret>
-                              <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback</redirect_uri>
-                              <realm>master</realm>
-                          </provider>
-                      </OIDC>
-                values:
-                  webHandlers:
-                    podAnnotations:
-                      backup.velero.io/backup-volumes: galaxy-data
-                  resources:
-                    requests:
-                      cpu: 200m
-                      memory: 2500Mi
-                    limits:
-                      cpu: 3000m
-                      memory: 7000Mi
-                  jobs:
-                    rules:
-                      container_mapper_rules.yml: |
-                        mappings:
-                          - tool_ids:
-                              - Summary_Statistics1
-                            container:
-                              docker_container_id_override: cloudve/gsummary:latest
-                              resource_set: small
-                          - tool_ids:
-                              - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_sam_fasta_index_builder/sam_fasta_index_builder/.*
-                            container:
-                              docker_container_id_override: cloudve/sam-fasta-dm:latest
-                              resource_set: small
-                          - tool_ids:
-                              - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_bwa_mem_index_builder/bwa_mem_index_builder_data_manager/.*
-                            container:
-                              docker_container_id_override: cloudve/bwa-dm:latest
-                              resource_set: small
-                          - tool_ids:
-                              - sort1
-                              - Grouping1
-                            container:
-                              docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
-                              resource_set: small
-                        resources:
-                          resource_sets:
-                            small:
-                              requests:
-                                cpu: 0.25
-                                memory: 2G
-                              limits:
-                                cpu: 4
-                                memory: 16G
-                          default_resource_set: small
-                  image:
-                    repository: galacticcore/galaxy-pro
-                    tag: 19.09-s
-                  configs:
-                    galaxy.yml:
-                      galaxy:
-                        error_email_to: support@galactic-core.com
-                        email_from: support@galactic-core.com
-                        instance_resource_url: https://galactic-core.com/
-                        ga_code:
-                        enable_old_display_applications: false
-                        interactivetools_enable: false
-                        visualizations_visible: false
-                        brand:
-                        user_preferences_extra_conf_path:
-                        logo_url: /
-                        logo_custom: https://galactic-core.com/logo.svg
-                        helpsite_url: https://galactic-core.com/
-                        wiki_url: https://galactic-core.com/
-                        support_url: mailto:support@galactic-core.com
-                        citation_url: https://galactic-core.com/
-                        search_url: https://galactic-core.com/
-                        terms_url: https://galactic-core.com/
-                        qa_url: https://galactic-core.com/
-                        allow_user_creation: false
-                        enable_beta_gdpr: true
-                        enable_tool_tags: true
-                        auth_config_file: config/auth_conf.xml
-                    auth_conf.xml: |
-                      <?xml version="1.0"?>
-                      <auth>
-                      </auth>
-                  extraFileMappings:
-                    /galaxy/server/static/welcome.html:
-                      useSecret: false
-                      applyToJob: false
-                      applyToWeb: true
-                      content: |
-                        <!DOCTYPE html>
-                        <html lang="en">
-                            <head>
-                                <meta charset="utf-8">
-                                <link rel="stylesheet" href="style/base.css" type="text/css" />
-                            </head>
-                            <body class="m-0">
-                                <div class="py-4">
-                                    <div class="container">
-                                        <h1>Welcome to <strong>Galaxy Pro</strong></h1>
-                                        <p>
-                                            Your Galaxy Pro instance is ready for use. Start by
-                                            uploading data and selecting tools from the tool panel on
-                                            the left. You can also run complex pipelines via workflows
-                                            or share data with colleagues and collaborators.
-                                        </p>
-                                        <p>
-                                            If you encounter issues with using the service, please
-                                            <a target="_blank"
-                                            href="mailto:support@galactic-core.com">reach out to us</a>.
-                                        </p>
-                                        <hr />
-                                        {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
-                                        <h3>Status dashboard</h3>
-                                        An overview of the current system state and usage.
-                                        <div class="container">
-                                            <iframe width="100%" height="1300px" frameborder="0" marginheight="0" marginwidth="0"
-                                                src="/grafana/d/gxy_general_stats_{{ '{{' }} .Release.Name {{ '}}' }}/galaxy-overview?refresh=60s&orgId=1&kiosk&theme=light"></iframe>
-                                        </div>
-                                        {{ '{{' }}- end {{ '}}' }}
-                                    </div>
-                                </div>
-                                <div class="container">
-                                    <footer class="text-center">
-                                        <a target="_blank" href="https://galactic-core.com">Terms and Conditions.</a>
-                                        <p>Copyright © 2020 Galactic Core LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
-                                    </footer>
-                                </div>
-                            </body>
-                        </html>
-                  persistence:
-                    storageClass: efs
-                    size: 1100Gi
-                  postgresql:
-                    master:
+            [all:vars]
+            ansible_ssh_port=22
+            ansible_user='${user}'
+            ansible_ssh_private_key_file=pk
+            ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+          repository: https://github.com/CloudVE/ansible-cloudman2
+          runner: ansible
+          sshUser: ubuntu
+        config_cloudlaunch:
+          firewall:
+          - rules:
+            - cidr: 0.0.0.0/0
+              from: '22'
+              protocol: tcp
+              to: '22'
+            - cidr: 0.0.0.0/0
+              from: '80'
+              protocol: tcp
+              to: '80'
+            - cidr: 0.0.0.0/0
+              from: '443'
+              protocol: tcp
+              to: '443'
+            - cidr: 0.0.0.0/0
+              from: '4430'
+              protocol: tcp
+              to: '4430'
+            - cidr: 0.0.0.0/0
+              from: '6443'
+              protocol: tcp
+              to: '6443'
+            - cidr: 0.0.0.0/0
+              from: '2379'
+              protocol: tcp
+              to: '2380'
+            - cidr: 0.0.0.0/0
+              from: '10250'
+              protocol: tcp
+              to: '10250'
+            - cidr: 0.0.0.0/0
+              from: '10251'
+              protocol: tcp
+              to: '10251'
+            - cidr: 0.0.0.0/0
+              from: '10252'
+              protocol: tcp
+              to: '10252'
+            - cidr: 0.0.0.0/0
+              from: '10256'
+              protocol: tcp
+              to: '10256'
+            - cidr: 0.0.0.0/0
+              from: '30000'
+              protocol: tcp
+              to: '32767'
+            - from: '1'
+              protocol: tcp
+              src_group: cloudlaunch-cm2
+              to: '65535'
+            - from: '1'
+              protocol: udp
+              src_group: cloudlaunch-cm2
+              to: '65535'
+            securityGroup: cloudlaunch-cm2
+          vmType: m1.medium
+        config_cloudman2:
+          cm_boot_image: galacticcore/galaxy-pro-boot
+          cm_helm_values: |
+            cluster_type: KUBE_RANCHER
+            rancher_url: "https://{{ rancher_server }}:{{ rancher_port }}"
+            rancher_api_key: "{{ token }}"
+            rancher_cluster_id: "{{ cluster_id }}"
+            rancher_project_id: "{{ project_id }}"
+            cm_initial_cluster_data: "{{ cm_initial_cluster_data|default('') }}"
+
+            helmsman_config:
+              repositories:
+                 - name: cloudve
+                   url: https://raw.githubusercontent.com/CloudVE/helm-charts/master/
+              charts:
+                cvmfs:
+                  name: cloudve/galaxy-cvmfs-csi
+                  namespace: cvmfs
+                  values:
+                    cache:
+                      size: 30000
+                galaxy:
+                  name: cloudve/galaxy
+                  namespace: default
+                  oidc_client:
+                    client_secret: {{ random_client_secret }}
+                    redirect_uris:
+                      - '{{'{{'}}include "cloudman.root_url" .{{'}}{{'}}.Values.helmsman_config.charts.galaxy.values.ingress.path{{'}}'}}/authnz/custos/callback'
+                  tplValues:
+                    configs:
+                      oidc_backends_config.xml: |
+                        <?xml version="1.0"?>
+                        <OIDC>
+                            <provider name="custos">
+                                <url>https://{{ rancher_server }}/auth</url>
+                                <client_id>galaxy-auth</client_id>
+                                <client_secret>{{ '{{' }}.Values.helmsman_config.charts.galaxy.oidc_client.client_secret {{ '}}' }}</client_secret>
+                                <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback</redirect_uri>
+                                <realm>master</realm>
+                            </provider>
+                        </OIDC>
+                  values:
+                    webHandlers:
                       podAnnotations:
-                        backup.velero.io/backup-volumes: data
+                        backup.velero.io/backup-volumes: galaxy-data
+                    resources:
+                      requests:
+                        cpu: 200m
+                        memory: 2500Mi
+                      limits:
+                        cpu: 3000m
+                        memory: 7000Mi
+                    jobs:
+                      rules:
+                        container_mapper_rules.yml: |
+                          mappings:
+                            - tool_ids:
+                                - Summary_Statistics1
+                              container:
+                                docker_container_id_override: cloudve/gsummary:latest
+                                resource_set: small
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_sam_fasta_index_builder/sam_fasta_index_builder/.*
+                              container:
+                                docker_container_id_override: cloudve/sam-fasta-dm:latest
+                                resource_set: small
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_bwa_mem_index_builder/bwa_mem_index_builder_data_manager/.*
+                              container:
+                                docker_container_id_override: cloudve/bwa-dm:latest
+                                resource_set: small
+                            - tool_ids:
+                                - sort1
+                                - Grouping1
+                              container:
+                                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                                resource_set: small
+                          resources:
+                            resource_sets:
+                              small:
+                                requests:
+                                  cpu: 0.25
+                                  memory: 2G
+                                limits:
+                                  cpu: 4
+                                  memory: 16G
+                            default_resource_set: small
+                    image:
+                      repository: galacticcore/galaxy-pro
+                      tag: 19.09-s
+                    configs:
+                      galaxy.yml:
+                        galaxy:
+                          error_email_to: support@galactic-core.com
+                          email_from: support@galactic-core.com
+                          instance_resource_url: https://galactic-core.com/
+                          ga_code:
+                          enable_old_display_applications: false
+                          interactivetools_enable: false
+                          visualizations_visible: false
+                          brand:
+                          user_preferences_extra_conf_path:
+                          logo_url: /
+                          logo_custom: https://galactic-core.com/logo.svg
+                          helpsite_url: https://galactic-core.com/
+                          wiki_url: https://galactic-core.com/
+                          support_url: mailto:support@galactic-core.com
+                          citation_url: https://galactic-core.com/
+                          search_url: https://galactic-core.com/
+                          terms_url: https://galactic-core.com/
+                          qa_url: https://galactic-core.com/
+                          allow_user_creation: false
+                          enable_beta_gdpr: true
+                          enable_tool_tags: true
+                          auth_config_file: config/auth_conf.xml
+                      auth_conf.xml: |
+                        <?xml version="1.0"?>
+                        <auth>
+                        </auth>
+                    extraFileMappings:
+                      /galaxy/server/static/welcome.html:
+                        useSecret: false
+                        applyToJob: false
+                        applyToWeb: true
+                        content: |
+                          <!DOCTYPE html>
+                          <html lang="en">
+                              <head>
+                                  <meta charset="utf-8">
+                                  <link rel="stylesheet" href="style/base.css" type="text/css" />
+                              </head>
+                              <body class="m-0">
+                                  <div class="py-4">
+                                      <div class="container">
+                                          <h1>Welcome to <strong>Galaxy Pro</strong></h1>
+                                          <p>
+                                              Your Galaxy Pro instance is ready for use. Start by
+                                              uploading data and selecting tools from the tool panel on
+                                              the left. You can also run complex pipelines via workflows
+                                              or share data with colleagues and collaborators.
+                                          </p>
+                                          <p>
+                                              If you encounter issues with using the service, please
+                                              <a target="_blank"
+                                              href="mailto:support@galactic-core.com">reach out to us</a>.
+                                          </p>
+                                          <hr />
+                                          {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
+                                          <h3>Status dashboard</h3>
+                                          An overview of the current system state and usage.
+                                          <div class="container">
+                                              <iframe width="100%" height="1300px" frameborder="0" marginheight="0" marginwidth="0"
+                                                  src="/grafana/d/gxy_general_stats_{{ '{{' }} .Release.Name {{ '}}' }}/galaxy-overview?refresh=60s&orgId=1&kiosk&theme=light"></iframe>
+                                          </div>
+                                          {{ '{{' }}- end {{ '}}' }}
+                                      </div>
+                                  </div>
+                                  <div class="container">
+                                      <footer class="text-center">
+                                          <a target="_blank" href="https://galactic-core.com">Terms and Conditions.</a>
+                                          <p>Copyright © 2020 Galactic Core LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
+                                      </footer>
+                                  </div>
+                              </body>
+                          </html>
                     persistence:
-                      storageClass: ebs
-                  ingress:
-                    enabled: true
-                    annotations:
-                       kubernetes.io/tls-acme: "true"
-                       cert-manager.io/cluster-issuer: letsencrypt-prod
-                       nginx.ingress.kubernetes.io/secure-backends: "true"
-                    hosts:
-                       - ~
-          {% if not (rancher_server | ipaddr) %}
-                       - "{{ rancher_server }}"
-                    tls:
-                       - secretName: "{{ rancher_server | replace('.', '-') }}-key"
-                         hosts:
-                           - "{{ rancher_server }}"
-          {% endif %}
-                    path: /default/galaxy
+                      storageClass: efs
+                      size: 1100Gi
+                    postgresql:
+                      master:
+                        podAnnotations:
+                          backup.velero.io/backup-volumes: data
+                      persistence:
+                        storageClass: ebs
+                    ingress:
+                      enabled: true
+                      annotations:
+                         kubernetes.io/tls-acme: "true"
+                         cert-manager.io/cluster-issuer: letsencrypt-prod
+                         nginx.ingress.kubernetes.io/secure-backends: "true"
+                      hosts:
+                         - ~
+            {% if not (rancher_server | ipaddr) %}
+                         - "{{ rancher_server }}"
+                      tls:
+                         - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                           hosts:
+                             - "{{ rancher_server }}"
+            {% endif %}
+                      path: /default/galaxy
 
-          cloudlaunch:
-             resources:
-                requests:
-                  cpu: 100m
-                  memory: 500Mi
-                limits:
-                  cpu: 1000m
-                  memory: 3000Mi
-             cloudlaunchserver:
-                resources:
+            cloudlaunch:
+               resources:
                   requests:
-                    cpu: 500m
-                    memory: 1500Mi
+                    cpu: 100m
+                    memory: 500Mi
                   limits:
                     cpu: 1000m
-                    memory: 5000Mi
-                admin_password: "{{ rancher_password }}"
-                postgresql:
-                   persistence:
-                      storageClass: "ebs"
-                ingress:
-                   annotations:
-                      kubernetes.io/tls-acme: "true"
-                      cert-manager.io/cluster-issuer: letsencrypt-prod
-                      nginx.ingress.kubernetes.io/secure-backends: "true"
-                   hosts:
-                      - ~
-          {% if not (rancher_server | ipaddr) %}
-                      - "{{ rancher_server }}"
-                   tls:
-                      - secretName: "{{ rancher_server | replace('.', '-') }}-key"
-                        hosts:
-                          - "{{ rancher_server }}"
-          {% endif %}
-             ingress:
-                annotations:
-                   kubernetes.io/tls-acme: "true"
-                   cert-manager.io/cluster-issuer: letsencrypt-prod
-                   nginx.ingress.kubernetes.io/secure-backends: "true"
-                hosts:
-                   - ~
-          {% if not (rancher_server | ipaddr) %}
-                   - "{{ rancher_server }}"
-                tls:
-                   - secretName: "{{ rancher_server | replace('.', '-') }}-key"
-                     hosts:
-                       - "{{ rancher_server }}"
-          {% endif %}
-          prometheus:
-             persistence:
-                storageClass: "efs"
-             grafana:
-                adminPassword: {{ random_client_secret }}
-                grafana.ini:
-                   server:
-                      root_url: "https://{{ rancher_server }}/grafana"
-                   auth.generic_oauth:
-                      auth_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/auth"
-                      token_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/token"
-                      api_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/userinfo"
-                ingress:
-                   annotations:
-                      kubernetes.io/tls-acme: "true"
-                      cert-manager.io/cluster-issuer: letsencrypt-prod
-                      nginx.ingress.kubernetes.io/secure-backends: "true"
-                   hosts:
-                      - ~
-          {% if not (rancher_server | ipaddr) %}
-                      - "{{ rancher_server }}"
-                   tls:
-                      - secretName: "{{ rancher_server | replace('.', '-') }}-key"
-                        hosts:
-                          - "{{ rancher_server }}"
-          {% endif %}
-          keycloak:
-             keycloak:
-                 resources:
-                   requests:
-                      cpu: 100m
-                      memory: 750Mi
-                   limits:
+                    memory: 3000Mi
+               cloudlaunchserver:
+                  resources:
+                    requests:
+                      cpu: 500m
+                      memory: 1500Mi
+                    limits:
                       cpu: 1000m
-                      memory: 2000Mi
-                 password: "{{ rancher_password }}"
-                 ingress:
-                   enabled: true
-                   path: /auth
-                   annotations:
-                      kubernetes.io/tls-acme: "true"
-                      cert-manager.io/cluster-issuer: letsencrypt-prod
-                      nginx.ingress.kubernetes.io/secure-backends: "true"
-                   hosts:
-                      - ~
-          {% if not (rancher_server | ipaddr) %}
-                      - "{{ rancher_server }}"
-                   tls:
-                      - secretName: "{{ rancher_server | replace('.', '-') }}-key"
-                        hosts:
-                          - "{{ rancher_server }}"
-          {% endif %}
-                 extraInitContainers: |
-                   - name: theme-provider
-                     image: galacticcore/gc-keycloak-theme:latest
-                     imagePullPolicy: IfNotPresent
-                     command:
-                       - sh
-                     args:
-                       - -c
-                       - |
-                         echo "Copying theme..."
-                         cp -R /customtheme/* /theme
-                         echo "done."
-                     volumeMounts:
-                       - name: theme
-                         mountPath: /theme
-          global:
-             domain: "{{ rancher_server }}"
-             deployment_name: "{{ cm_deployment_name }}"
+                      memory: 5000Mi
+                  admin_password: "{{ rancher_password }}"
+                  postgresql:
+                     persistence:
+                        storageClass: "ebs"
+                  ingress:
+                     annotations:
+                        kubernetes.io/tls-acme: "true"
+                        cert-manager.io/cluster-issuer: letsencrypt-prod
+                        nginx.ingress.kubernetes.io/secure-backends: "true"
+                     hosts:
+                        - ~
+            {% if not (rancher_server | ipaddr) %}
+                        - "{{ rancher_server }}"
+                     tls:
+                        - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                          hosts:
+                            - "{{ rancher_server }}"
+            {% endif %}
+               ingress:
+                  annotations:
+                     kubernetes.io/tls-acme: "true"
+                     cert-manager.io/cluster-issuer: letsencrypt-prod
+                     nginx.ingress.kubernetes.io/secure-backends: "true"
+                  hosts:
+                     - ~
+            {% if not (rancher_server | ipaddr) %}
+                     - "{{ rancher_server }}"
+                  tls:
+                     - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                       hosts:
+                         - "{{ rancher_server }}"
+            {% endif %}
+            prometheus:
+               persistence:
+                  storageClass: "efs"
+               grafana:
+                  adminPassword: {{ random_client_secret }}
+                  grafana.ini:
+                     server:
+                        root_url: "https://{{ rancher_server }}/grafana"
+                     auth.generic_oauth:
+                        auth_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/auth"
+                        token_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/token"
+                        api_url: "https://{{ rancher_server }}/auth/realms/master/protocol/openid-connect/userinfo"
+                  ingress:
+                     annotations:
+                        kubernetes.io/tls-acme: "true"
+                        cert-manager.io/cluster-issuer: letsencrypt-prod
+                        nginx.ingress.kubernetes.io/secure-backends: "true"
+                     hosts:
+                        - ~
+            {% if not (rancher_server | ipaddr) %}
+                        - "{{ rancher_server }}"
+                     tls:
+                        - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                          hosts:
+                            - "{{ rancher_server }}"
+            {% endif %}
+            keycloak:
+               keycloak:
+                   resources:
+                     requests:
+                        cpu: 100m
+                        memory: 750Mi
+                     limits:
+                        cpu: 1000m
+                        memory: 2000Mi
+                   password: "{{ rancher_password }}"
+                   ingress:
+                     enabled: true
+                     path: /auth
+                     annotations:
+                        kubernetes.io/tls-acme: "true"
+                        cert-manager.io/cluster-issuer: letsencrypt-prod
+                        nginx.ingress.kubernetes.io/secure-backends: "true"
+                     hosts:
+                        - ~
+            {% if not (rancher_server | ipaddr) %}
+                        - "{{ rancher_server }}"
+                     tls:
+                        - secretName: "{{ rancher_server | replace('.', '-') }}-key"
+                          hosts:
+                            - "{{ rancher_server }}"
+            {% endif %}
+                   extraInitContainers: |
+                     - name: theme-provider
+                       image: galacticcore/gc-keycloak-theme:latest
+                       imagePullPolicy: IfNotPresent
+                       command:
+                         - sh
+                       args:
+                         - -c
+                         - |
+                           echo "Copying theme..."
+                           cp -R /customtheme/* /theme
+                           echo "done."
+                       volumeMounts:
+                         - name: theme
+                           mountPath: /theme
+            global:
+               domain: "{{ rancher_server }}"
+               deployment_name: "{{ cm_deployment_name }}"
