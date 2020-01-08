@@ -4,12 +4,12 @@ apps:
     status: LIVE
     summary: |-
       Galaxy Pro - A production grade Galaxy genomics workbench.
-    maintainer: Galactic Core Team
+    maintainer: GalaxyWorks LLC
     description: |-
       Galaxy Pro offers Galaxy as a fully managed, production-grade subscription service with enhanced usage capabilities,
       increased security, and quality of service guarantees.
-    info_url: https://galactic-core.com
-    icon_url: https://galactic-core.com/logo.svg
+    info_url: https://galaxyworks.io
+    icon_url: https://galaxyworks.io/logo.svg
     display_order: 1000
     default_version: GC Pro Alpha (v0.1)
     default_launch_config:
@@ -134,7 +134,7 @@ apps:
             securityGroup: cloudlaunch-cm2
           vmType: m1.medium
         config_cloudman2:
-          cm_boot_image: galacticcore/galaxy-pro-boot
+          cm_boot_image: galaxyworks/galaxy-pro-boot
           cm_helm_values: |
             cluster_type: KUBE_RANCHER
             rancher_url: "https://{{ rancher_server }}:{{ rancher_port }}"
@@ -221,14 +221,14 @@ apps:
                                   memory: 16G
                             default_resource_set: small
                     image:
-                      repository: galacticcore/galaxy-pro
+                      repository: galaxyworks/galaxy-pro
                       tag: 19.09-s
                     configs:
                       galaxy.yml:
                         galaxy:
-                          error_email_to: support@galactic-core.com
-                          email_from: support@galactic-core.com
-                          instance_resource_url: https://galactic-core.com/
+                          error_email_to: support@galaxyworks.io
+                          email_from: support@galaxyworks.io
+                          instance_resource_url: https://galaxyworks.io/
                           ga_code:
                           enable_old_display_applications: false
                           interactivetools_enable: false
@@ -236,14 +236,14 @@ apps:
                           brand:
                           user_preferences_extra_conf_path:
                           logo_url: /
-                          logo_custom: https://galactic-core.com/logo.svg
-                          helpsite_url: https://galactic-core.com/
-                          wiki_url: https://galactic-core.com/
-                          support_url: mailto:support@galactic-core.com
-                          citation_url: https://galactic-core.com/
-                          search_url: https://galactic-core.com/
-                          terms_url: https://galactic-core.com/
-                          qa_url: https://galactic-core.com/
+                          logo_custom: https://galaxyworks.io/logo.svg
+                          helpsite_url: https://galaxyworks.io/
+                          wiki_url: https://galaxyworks.io/
+                          support_url: mailto:support@galaxyworks.io
+                          citation_url: https://galaxyworks.io/
+                          search_url: https://galaxyworks.io/
+                          terms_url: https://galaxyworks.io/
+                          qa_url: https://galaxyworks.io/
                           allow_user_creation: false
                           enable_beta_gdpr: true
                           enable_tool_tags: true
@@ -1394,7 +1394,7 @@ apps:
                                           <p>
                                               If you encounter issues with using the service, please
                                               <a target="_blank"
-                                              href="mailto:support@galactic-core.com">reach out to us</a>.
+                                              href="mailto:support@galaxyworks.io">reach out to us</a>.
                                           </p>
                                           <hr />
                                           {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
@@ -1409,8 +1409,8 @@ apps:
                                   </div>
                                   <div class="container">
                                       <footer class="text-center">
-                                          <a target="_blank" href="https://galactic-core.com">Terms and Conditions.</a>
-                                          <p>Copyright © 2020 Galactic Core LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
+                                          <a target="_blank" href="https://galaxyworks.io">Terms and Conditions.</a>
+                                          <p>Copyright © 2020 GalaxyWorks LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
                                       </footer>
                                   </div>
                               </body>
@@ -1545,7 +1545,7 @@ apps:
             {% endif %}
                    extraInitContainers: |
                      - name: theme-provider
-                       image: galacticcore/gc-keycloak-theme:latest
+                       image: galaxyworks/galaxy-pro-keycloak-theme:latest
                        imagePullPolicy: IfNotPresent
                        command:
                          - sh
