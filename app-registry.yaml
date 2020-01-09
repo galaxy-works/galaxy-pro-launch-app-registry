@@ -236,8 +236,8 @@ apps:
                           brand:
                           user_preferences_extra_conf_path:
                           logo_url: /
+                          logo_src: https://galaxyworks.io/logo.svg
                           require_login: true
-                          logo_custom: https://galaxyworks.io/logo.svg
                           helpsite_url: https://galaxyworks.io/
                           wiki_url: https://galaxyworks.io/
                           support_url: mailto:support@galaxyworks.io
