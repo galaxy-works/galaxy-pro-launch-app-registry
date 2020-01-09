@@ -1443,6 +1443,9 @@ apps:
                       path: /default/galaxy
 
             cloudlaunch:
+               image:
+                  repository: galaxyworks/cloudman-ui-pro
+                  tag: latest
                resources:
                   requests:
                     cpu: 100m
