@@ -210,6 +210,13 @@ apps:
                               container:
                                 docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
                                 resource_set: small
+                            - tool_ids:
+                                - read_mapping_viz
+                                - snp_substitution_viz
+                                - variant_summary_viz
+                              container:
+                                docker_container_id_override: galaxyworks/customviztools:latest
+                                resource_set: small
                           resources:
                             resource_sets:
                               small:
