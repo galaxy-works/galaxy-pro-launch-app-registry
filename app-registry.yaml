@@ -222,7 +222,7 @@ apps:
                             default_resource_set: small
                     image:
                       repository: galaxyworks/galaxy-pro-awesome-cat
-                      tag: 19.09-s
+                      tag: latest
                     configs:
                       galaxy.yml:
                         galaxy:
