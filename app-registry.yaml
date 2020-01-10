@@ -221,7 +221,7 @@ apps:
                                   memory: 16G
                             default_resource_set: small
                     image:
-                      repository: galaxyworks/galaxy-pro
+                      repository: galaxyworks/galaxy-pro-awesome-cat
                       tag: 19.09-s
                     configs:
                       galaxy.yml:
