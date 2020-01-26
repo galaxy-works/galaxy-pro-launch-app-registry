@@ -233,6 +233,10 @@ apps:
                     configs:
                       galaxy.yml:
                         galaxy:
+                          smtp_server: {{ galaxy_pro_smtp_server }}
+                          smtp_ssl: true
+                          smtp_username: {{ galaxy_pro_smtp_username }}
+                          smtp_password: {{ galaxy_pro_smtp_password }}
                           error_email_to: support@galaxyworks.io
                           email_from: support@galaxyworks.io
                           instance_resource_url: https://galaxyworks.io/
