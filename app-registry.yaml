@@ -10,7 +10,7 @@ apps:
       increased security, and quality of service guarantees.
     info_url: https://galaxyworks.io
     icon_url: https://galaxyworks.io/logo.svg
-    display_order: 1000
+    display_order: 950
     default_version: GC Pro Alpha (v0.1)
     default_launch_config:
       config_cloudlaunch:
