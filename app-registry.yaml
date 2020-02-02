@@ -371,10 +371,11 @@ apps:
                                               the left. You can also run complex pipelines via workflows
                                               or share data with colleagues and collaborators.
                                           </p>
+                                          <h3>Support</h3>
                                           <p>
-                                              If you encounter issues with using the service, please
+                                              How can we help? Reach out to us with questions about the service at
                                               <a target="_blank"
-                                              href="mailto:support@galaxyworks.io">reach out to us</a>.
+                                              href="mailto:support@galaxyworks.io">support@galaxyworks.io</a>.
                                           </p>
                                           <hr />
                                           {{ '{{' }}- if .Values.influxdb.enabled {{ '}}' }}
@@ -389,7 +390,7 @@ apps:
                                   </div>
                                   <div class="container">
                                       <footer class="text-center">
-                                          <p>Copyright © 2020 GalaxyWorks LLC. All rights reserved. Galaxy v{{ '{{' }} .Chart.AppVersion {{ '}}' }}, Helm Chart v{{ '{{' }} .Chart.Version {{ '}}' }}</p>
+                                          <p>Copyright © 2020 GalaxyWorks LLC. All rights reserved. Galaxy Pro v{{ '{{' }} .Chart.AppVersion {{ '}}' }}.</p>
                                       </footer>
                                   </div>
                               </body>
