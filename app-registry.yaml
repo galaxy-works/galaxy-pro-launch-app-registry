@@ -156,11 +156,11 @@ apps:
                       size: 30000
                 galaxy:
                   name: cloudve/galaxy
-                  namespace: default
+                  namespace: initial
                   oidc_client:
                     client_secret: {{ random_client_secret }}
                     redirect_uris:
-                      - '{{'{{'}}include "cloudman.root_url" .{{'}}{{'}}.Values.helmsman_config.charts.galaxy.values.ingress.path{{'}}'}}/authnz/custos/callback'
+                      - '{{ '{{' }} include "cloudman.root_url" . {{ '}}{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback'
                   tplValues:
                     configs:
                       oidc_backends_config.xml: |
@@ -399,6 +399,7 @@ apps:
                       storageClass: efs
                       size: 1100Gi
                     postgresql:
+                      postgresqlPostgresPassword: {{ random_client_secret }}
                       master:
                         podAnnotations:
                           backup.velero.io/backup-volumes: data
@@ -419,9 +420,11 @@ apps:
                            hosts:
                              - "{{ rancher_server }}"
             {% endif %}
-                      path: /default/galaxy
+                      path: /initial/galaxy
 
             cloudlaunch:
+               rabbitmq:
+                  rabbitmqErlangCookie: {{ random_client_secret }}{{ random_client_secret }}
                image:
                   repository: galaxyworks/cloudman-ui-pro
                   tag: latest
@@ -477,6 +480,12 @@ apps:
             prometheus:
                persistence:
                   storageClass: "efs"
+               alertmanager:
+                  config:
+                     global:
+                        http_config:
+                           basic_auth:
+                              password: {{ random_client_secret }}
                grafana:
                   adminPassword: {{ random_client_secret }}
                   grafana.ini:
@@ -541,6 +550,9 @@ apps:
                        volumeMounts:
                          - name: theme
                            mountPath: /theme
+            influxdb:
+              setDefaultUser:
+                password: {{ random_client_secret }}
             global:
                domain: "{{ rancher_server }}"
                deployment_name: "{{ cm_deployment_name }}"
