@@ -483,9 +483,50 @@ apps:
                alertmanager:
                   config:
                      global:
-                        http_config:
-                           basic_auth:
-                              password: {{ random_client_secret }}
+                       smtp_smarthost: {{ galaxy_pro_smtp_server }}
+                       smtp_from: 'alerts@{{ rancher_server }}'
+                       smtp_auth_username: {{ galaxy_pro_smtp_username }}
+                       smtp_auth_password: {{ galaxy_pro_smtp_password }}
+                       smtp_require_tls: false
+                       http_config:
+                          basic_auth:
+                             password: {{ random_client_secret }}
+                     receivers:
+                       - name: 'scaleup'
+                         webhook_configs:
+                           - url: http://{{ '{{' }} .Release.Name {{ '}}' }}-cloudlaunchserver:8000/cloudman/api/v1/clusters/1/signals/scaleup/
+                             send_resolved: false
+                       - name: 'scaledown'
+                         webhook_configs:
+                           - url: http://{{ '{{' }} .Release.Name {{ '}}' }}-cloudlaunchserver:8000/cloudman/api/v1/clusters/1/signals/scaledown/
+                             send_resolved: false
+                       - name: 'blackhole'
+                       - name: 'email'
+                         email_configs:
+                           - to: support@galaxyworks.io
+                     route:
+                       group_by:
+                         - alertname
+                       receiver: 'blackhole'
+                       group_interval: 5m
+                       group_wait: 30s
+                       repeat_interval: 8h
+                       routes:
+                         - match:
+                             alertname: ClusterOverUtilized
+                           receiver: 'scaleup'
+                           group_interval: 2m
+                           group_wait: 30s
+                           repeat_interval: 5m
+                         - match:
+                             alertname: ClusterUnderUtilized
+                           receiver: 'scaledown'
+                           group_interval: 2m
+                           group_wait: 30s
+                           repeat_interval: 5m
+                         - match:
+                             severity: critical
+                           receiver: 'email'
                grafana:
                   adminPassword: {{ random_client_secret }}
                   grafana.ini:
