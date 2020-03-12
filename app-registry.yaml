@@ -349,6 +349,53 @@ apps:
                             <section id="ncbi_blast_" name="NCBI BLAST+" version="">
                             </section>
                         </toolbox>
+                      job_conf.xml: |
+                        <job_conf>
+                            <plugins>
+                                <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4" />
+                                <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
+                                  <param id="k8s_use_service_account">true</param>
+                                  <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }}</param>
+                                  <param id="k8s_namespace">{{ '{{' }} .Release.Namespace {{ '}}' }}</param>
+                                  <!-- Must be DNS friendly and less than 20 characters -->
+                                  <param id="k8s_galaxy_instance_id">{{ '{{' }} .Release.Name {{ '}}' }}</param>
+                                  <param id="k8s_run_as_user_id">101</param>
+                                  <param id="k8s_run_as_group_id">101</param>
+                                  <param id="k8s_fs_group_id">101</param>
+                                  <param id="k8s_supplemental_group_id">101</param>
+                                  <param id="k8s_pull_policy">IfNotPresent</param>
+                                  <param id="k8s_cleanup_job">always</param>
+                                  <param id="k8s_pod_priority_class">{{ '{{' }} include "galaxy.fullname" . {{ '}}' }}-job-priority</param>
+                                  <param id="k8s_affinity">
+                                    nodeAffinity:
+                                      requiredDuringSchedulingIgnoredDuringExecution:
+                                        nodeSelectorTerms:
+                                        - matchExpressions:
+                                          - key: node-role.kubernetes.io/controlplane
+                                            operator: NotIn
+                                            values:
+                                            - "true"
+                                          - key: node-role.kubernetes.io/etcd
+                                            operator: NotIn
+                                            values:
+                                            - "true"
+                                  </param>
+                                </plugin>
+                            </plugins>
+                            <destinations default="dynamic-k8s-dispatcher">
+                                <destination id="local" runner="local"/>
+                                <destination id="dynamic-k8s-dispatcher" runner="dynamic">
+                                  <param id="type">python</param>
+                                  <param id="function">k8s_container_mapper</param>
+                                  <param id="docker_default_container_id">{{ '{{' }} .Values.image.repository {{ '}}' }}:{{ '{{' }} .Values.image.tag {{ '}}' }}</param>
+                                  <param id="docker_enabled">true</param>
+                                </destination>
+                            </destinations>
+                            <limits>
+                                <limit type="registered_user_concurrent_jobs">5</limit>
+                                <limit type="anonymous_user_concurrent_jobs">2</limit>
+                            </limits>
+                        </job_conf>
                     extraFileMappings:
                       /galaxy/server/static/welcome.html:
                         useSecret: false
