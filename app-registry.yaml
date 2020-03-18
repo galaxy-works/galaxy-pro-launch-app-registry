@@ -134,7 +134,7 @@ apps:
             securityGroup: cloudlaunch-cm2
           vmType: m1.medium
         config_cloudman2:
-          cm_boot_image: galaxyworks/galaxy-pro-boot
+          cm_boot_image: galaxyworks/galaxy-pro-boot:1.0.0
           cm_helm_values: |
             cluster_type: KUBE_RANCHER
             rancher_url: "https://{{ rancher_server }}:{{ rancher_port }}"
@@ -192,17 +192,17 @@ apps:
                             - tool_ids:
                                 - Summary_Statistics1
                               container:
-                                docker_container_id_override: cloudve/gsummary:latest
+                                docker_container_id_override: galaxyworks/gsummary:1.0.0
                                 resource_set: small
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_sam_fasta_index_builder/sam_fasta_index_builder/.*
                               container:
-                                docker_container_id_override: cloudve/sam-fasta-dm:latest
+                                docker_container_id_override: galaxyworks/sam-fasta-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_bwa_mem_index_builder/bwa_mem_index_builder_data_manager/.*
                               container:
-                                docker_container_id_override: cloudve/bwa-dm:latest
+                                docker_container_id_override: galaxyworks/bwa-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
                                 - sort1
@@ -215,7 +215,7 @@ apps:
                                 - snp_substitution_viz
                                 - variant_summary_viz
                               container:
-                                docker_container_id_override: galaxyworks/customviztools:latest
+                                docker_container_id_override: galaxyworks/customviztools:1.0.0
                                 resource_set: small
                           resources:
                             resource_sets:
@@ -474,7 +474,7 @@ apps:
                   rabbitmqErlangCookie: {{ random_client_secret }}{{ random_client_secret }}
                image:
                   repository: galaxyworks/cloudman-ui-pro
-                  tag: latest
+                  tag: 1.0.0
                resources:
                   requests:
                     cpu: 100m
@@ -483,6 +483,9 @@ apps:
                     cpu: 1000m
                     memory: 3000Mi
                cloudlaunchserver:
+                  image:
+                    repository: galaxyworks/cloudman-server
+                    tag: 1.0.0
                   podAnnotations:
                     iam.amazonaws.com/role: "{{ cm_deployment_name }}-gxy-pro-cm-node"
                   resources:
@@ -625,7 +628,7 @@ apps:
             {% endif %}
                    extraInitContainers: |
                      - name: theme-provider
-                       image: galaxyworks/galaxy-pro-keycloak-theme:latest
+                       image: galaxyworks/galaxy-pro-keycloak-theme:1.0.0
                        imagePullPolicy: IfNotPresent
                        command:
                          - sh
