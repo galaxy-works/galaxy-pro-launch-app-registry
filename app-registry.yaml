@@ -233,6 +233,7 @@ apps:
                     configs:
                       galaxy.yml:
                         galaxy:
+                          session_duration: 30
                           smtp_server: {{ galaxy_pro_smtp_server }}
                           smtp_ssl: true
                           smtp_username: {{ galaxy_pro_smtp_username }}
@@ -823,6 +824,7 @@ apps:
                     configs:
                       galaxy.yml:
                         galaxy:
+                          session_duration: 30
                           smtp_server: {{ galaxy_pro_smtp_server }}
                           smtp_ssl: true
                           smtp_username: {{ galaxy_pro_smtp_username }}
