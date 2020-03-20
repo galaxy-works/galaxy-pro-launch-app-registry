@@ -172,6 +172,7 @@ apps:
                                 <client_secret>{{ '{{' }}.Values.helmsman_config.charts.galaxy.oidc_client.client_secret {{ '}}' }}</client_secret>
                                 <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback</redirect_uri>
                                 <realm>master</realm>
+                                <enable_idp_logout>true</enable_idp_logout>
                             </provider>
                         </OIDC>
                   values:
