@@ -229,8 +229,8 @@ apps:
                                   memory: 16G
                             default_resource_set: small
                     image:
-                      repository: galaxyworks/galaxy-pro-custom
-                      tag: 20.01
+                      repository: galaxyworks/galaxy-pro
+                      tag: 20.01-1.0.0
                     configs:
                       galaxy.yml:
                         galaxy:
@@ -820,8 +820,8 @@ apps:
                                   memory: 16G
                             default_resource_set: small
                     image:
-                      repository: galaxyworks/galaxy-pro-custom
-                      tag: 20.01
+                      repository: galaxyworks/galaxy-pro
+                      tag: 20.01-1.0.0
                     configs:
                       galaxy.yml:
                         galaxy:
@@ -1071,20 +1071,20 @@ apps:
                resources:
                   requests:
                     cpu: 100m
-                    memory: 500Mi
+                    memory: 200Mi
                   limits:
                     cpu: 1000m
-                    memory: 3000Mi
+                    memory: 500Mi
                cloudlaunchserver:
                   podAnnotations:
                     iam.amazonaws.com/role: "{{ cm_deployment_name }}-gxy-pro-cm-node"
                   resources:
                     requests:
                       cpu: 500m
-                      memory: 1500Mi
+                      memory: 500Mi
                     limits:
                       cpu: 1000m
-                      memory: 5000Mi
+                      memory: 1000Mi
                   admin_password: "{{ rancher_password }}"
                   postgresql:
                      persistence:
