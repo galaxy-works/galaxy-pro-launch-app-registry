@@ -499,6 +499,7 @@ apps:
                       memory: 5000Mi
                   admin_password: "{{ rancher_password }}"
                   postgresql:
+                     postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
                   ingress:
@@ -1087,6 +1088,7 @@ apps:
                       memory: 1000Mi
                   admin_password: "{{ rancher_password }}"
                   postgresql:
+                     postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
                   ingress:
