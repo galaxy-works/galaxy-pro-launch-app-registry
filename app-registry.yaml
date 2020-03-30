@@ -448,6 +448,7 @@ apps:
                       storageClass: efs
                       size: 1100Gi
                     postgresql:
+                      postgresqlPassword: {{ random_client_secret }}
                       postgresqlPostgresPassword: {{ random_client_secret }}
                       master:
                         podAnnotations:
@@ -499,6 +500,7 @@ apps:
                       memory: 5000Mi
                   admin_password: "{{ rancher_password }}"
                   postgresql:
+                     postgresqlPassword: {{ random_client_secret }}
                      postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
@@ -1040,6 +1042,7 @@ apps:
                       storageClass: efs
                       size: 1100Gi
                     postgresql:
+                      postgresqlPassword: {{ random_client_secret }}
                       postgresqlPostgresPassword: {{ random_client_secret }}
                       master:
                         podAnnotations:
@@ -1088,6 +1091,7 @@ apps:
                       memory: 1000Mi
                   admin_password: "{{ rancher_password }}"
                   postgresql:
+                     postgresqlPassword: {{ random_client_secret }}
                      postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
