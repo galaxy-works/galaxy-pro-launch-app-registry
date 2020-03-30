@@ -181,8 +181,8 @@ apps:
                         backup.velero.io/backup-volumes: galaxy-data
                     resources:
                       requests:
-                        cpu: 200m
-                        memory: 2500Mi
+                        cpu: 300m
+                        memory: 2000Mi
                       limits:
                         cpu: 3000m
                         memory: 7000Mi
@@ -218,14 +218,59 @@ apps:
                               container:
                                 docker_container_id_override: galaxyworks/customviztools:1.0.0
                                 resource_set: small
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/bwameth/bwameth/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/hisat2/hisat2/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/valet/valet/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/varscan_somatic/varscan_somatic/.*
+                                - toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
+                              container:
+                                resource_set: medium
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_pe_fragmentsize/deeptools_bam_pe_fragmentsize/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_compare/deeptools_bigwig_compare/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_compute_gc_bias/deeptools_compute_gc_bias/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_compute_matrix/deeptools_compute_matrix/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_correct_gc_bias/deeptools_correct_gc_bias/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bigwig_summary/deeptools_multi_bigwig_summary/.*
+                                - toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
+                                - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+                              container:
+                                resource_set: large
                           resources:
                             resource_sets:
                               small:
                                 requests:
-                                  cpu: 0.25
+                                  cpu: 1
                                   memory: 2G
                                 limits:
+                                  cpu: 2
+                                  memory: 5G
+                              medium:
+                                requests:
+                                  cpu: 2
+                                  memory: 4G
+                                limits:
                                   cpu: 4
+                                  memory: 10G
+                              large:
+                                requests:
+                                  cpu: 4
+                                  memory: 8G
+                                limits:
+                                  cpu: 8
                                   memory: 16G
                             default_resource_set: small
                     image:
@@ -262,7 +307,7 @@ apps:
                           enable_beta_gdpr: true
                           enable_tool_tags: true
                           auth_config_file: config/auth_conf.xml
-                          tool_config_file: "/galaxy/server/config/tool_conf.xml,/galaxy/server/config/shed_tool_conf.xml"
+                          tool_config_file: "/galaxy/server/config/shed_tool_conf.xml,/galaxy/server/config/tool_conf.xml"
                       auth_conf.xml: |
                         <?xml version="1.0"?>
                         <auth>
@@ -394,8 +439,8 @@ apps:
                                 </destination>
                             </destinations>
                             <limits>
-                                <limit type="registered_user_concurrent_jobs">5</limit>
-                                <limit type="anonymous_user_concurrent_jobs">2</limit>
+                                <limit type="registered_user_concurrent_jobs">10</limit>
+                                <limit type="anonymous_user_concurrent_jobs">0</limit>
                             </limits>
                         </job_conf>
                     extraFileMappings:
