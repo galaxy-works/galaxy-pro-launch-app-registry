@@ -499,6 +499,9 @@ apps:
                       memory: 5000Mi
                   admin_password: "{{ rancher_password }}"
                   postgresql:
+                     master:
+                       podAnnotations:
+                         backup.velero.io/backup-volumes: data
                      persistence:
                         storageClass: "ebs"
                   ingress:
