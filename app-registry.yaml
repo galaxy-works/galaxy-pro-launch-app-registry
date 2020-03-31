@@ -507,6 +507,15 @@ apps:
                       master:
                         podAnnotations:
                           backup.velero.io/backup-volumes: data
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                       persistence:
                         storageClass: ebs
                     ingress:
@@ -576,6 +585,16 @@ apps:
                      postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
+                     master:
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                   ingress:
                      annotations:
                         kubernetes.io/tls-acme: "true"
@@ -1146,6 +1165,15 @@ apps:
                       master:
                         podAnnotations:
                           backup.velero.io/backup-volumes: data
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                       persistence:
                         storageClass: ebs
                     ingress:
@@ -1194,6 +1222,16 @@ apps:
                      postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
+                     master:
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                   ingress:
                      annotations:
                         kubernetes.io/tls-acme: "true"
