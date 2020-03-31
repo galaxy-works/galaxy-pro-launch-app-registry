@@ -624,9 +624,39 @@ apps:
                          - "{{ rancher_server }}"
             {% endif %}
             prometheus:
+               prometheusSpec:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
+               prometheusOperator:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                persistence:
                   storageClass: "efs"
                alertmanager:
+                  alertmanagerSpec:
+                     affinity:
+                       nodeAffinity:
+                         requiredDuringSchedulingIgnoredDuringExecution:
+                           nodeSelectorTerms:
+                           - matchExpressions:
+                             - key: node-role.kubernetes.io/controlplane
+                               operator: In
+                               values:
+                               - "true"
                   config:
                      global:
                        smtp_smarthost: {{ galaxy_pro_smtp_server }}
@@ -1261,9 +1291,39 @@ apps:
                          - "{{ rancher_server }}"
             {% endif %}
             prometheus:
+               prometheusSpec:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
+               prometheusOperator:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                persistence:
                   storageClass: "efs"
                alertmanager:
+                  alertmanagerSpec:
+                     affinity:
+                       nodeAffinity:
+                         requiredDuringSchedulingIgnoredDuringExecution:
+                           nodeSelectorTerms:
+                           - matchExpressions:
+                             - key: node-role.kubernetes.io/controlplane
+                               operator: In
+                               values:
+                               - "true"
                   config:
                      global:
                        smtp_smarthost: {{ galaxy_pro_smtp_server }}
