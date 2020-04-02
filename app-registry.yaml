@@ -157,6 +157,15 @@ apps:
                 galaxy:
                   name: galaxyworks/galaxy
                   namespace: initial
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                   oidc_client:
                     client_secret: {{ random_client_secret }}
                     redirect_uris:
@@ -498,6 +507,15 @@ apps:
                       master:
                         podAnnotations:
                           backup.velero.io/backup-volumes: data
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                       persistence:
                         storageClass: ebs
                     ingress:
@@ -530,6 +548,15 @@ apps:
                   limits:
                     cpu: 1000m
                     memory: 3000Mi
+               affinity:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                      - matchExpressions:
+                        - key: node-role.kubernetes.io/controlplane
+                          operator: In
+                          values:
+                          - "true"
                cloudlaunchserver:
                   image:
                     repository: galaxyworks/cloudman-server
@@ -543,12 +570,31 @@ apps:
                     limits:
                       cpu: 1000m
                       memory: 5000Mi
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                   admin_password: "{{ rancher_password }}"
                   postgresql:
                      postgresqlPassword: {{ random_client_secret }}
                      postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
+                     master:
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                   ingress:
                      annotations:
                         kubernetes.io/tls-acme: "true"
@@ -578,9 +624,39 @@ apps:
                          - "{{ rancher_server }}"
             {% endif %}
             prometheus:
+               prometheusSpec:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
+               prometheusOperator:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                persistence:
                   storageClass: "efs"
                alertmanager:
+                  alertmanagerSpec:
+                     affinity:
+                       nodeAffinity:
+                         requiredDuringSchedulingIgnoredDuringExecution:
+                           nodeSelectorTerms:
+                           - matchExpressions:
+                             - key: node-role.kubernetes.io/controlplane
+                               operator: In
+                               values:
+                               - "true"
                   config:
                      global:
                        smtp_smarthost: {{ galaxy_pro_smtp_server }}
@@ -629,6 +705,15 @@ apps:
                            receiver: 'email'
                grafana:
                   adminPassword: {{ random_client_secret }}
+                  affinity:
+                     nodeAffinity:
+                       requiredDuringSchedulingIgnoredDuringExecution:
+                         nodeSelectorTerms:
+                         - matchExpressions:
+                           - key: node-role.kubernetes.io/controlplane
+                             operator: In
+                             values:
+                             - "true"
                   grafana.ini:
                      server:
                         root_url: "https://{{ rancher_server }}/grafana"
@@ -659,6 +744,38 @@ apps:
                      limits:
                         cpu: 1000m
                         memory: 2000Mi
+                   affinity: |
+                     podAntiAffinity:
+                       requiredDuringSchedulingIgnoredDuringExecution:
+                         - labelSelector:
+                             matchLabels:
+                               {{- include "keycloak.selectorLabels" . | nindent 10 }}
+                             matchExpressions:
+                               - key: role
+                                 operator: NotIn
+                                 values:
+                                   - test
+                           topologyKey: kubernetes.io/hostname
+                       preferredDuringSchedulingIgnoredDuringExecution:
+                         - weight: 100
+                           podAffinityTerm:
+                             labelSelector:
+                               matchLabels:
+                                 {{- include "keycloak.selectorLabels" . | nindent 12 }}
+                               matchExpressions:
+                                 - key: role
+                                   operator: NotIn
+                                   values:
+                                     - test
+                             topologyKey: failure-domain.beta.kubernetes.io/zone
+                     nodeAffinity:
+                       requiredDuringSchedulingIgnoredDuringExecution:
+                         nodeSelectorTerms:
+                         - matchExpressions:
+                           - key: node-role.kubernetes.io/controlplane
+                             operator: In
+                             values:
+                             - "true"
                    password: "{{ rancher_password }}"
                    ingress:
                      enabled: true
@@ -797,6 +914,15 @@ apps:
                 galaxy:
                   name: cloudve/galaxy
                   namespace: initial
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                   oidc_client:
                     client_secret: {{ random_client_secret }}
                     redirect_uris:
@@ -1092,6 +1218,15 @@ apps:
                       master:
                         podAnnotations:
                           backup.velero.io/backup-volumes: data
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                       persistence:
                         storageClass: ebs
                     ingress:
@@ -1140,6 +1275,16 @@ apps:
                      postgresqlPostgresPassword: {{ random_client_secret }}
                      persistence:
                         storageClass: "ebs"
+                     master:
+                        affinity:
+                          nodeAffinity:
+                            requiredDuringSchedulingIgnoredDuringExecution:
+                              nodeSelectorTerms:
+                              - matchExpressions:
+                                - key: node-role.kubernetes.io/controlplane
+                                  operator: In
+                                  values:
+                                  - "true"
                   ingress:
                      annotations:
                         kubernetes.io/tls-acme: "true"
@@ -1169,9 +1314,39 @@ apps:
                          - "{{ rancher_server }}"
             {% endif %}
             prometheus:
+               prometheusSpec:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
+               prometheusOperator:
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                persistence:
                   storageClass: "efs"
                alertmanager:
+                  alertmanagerSpec:
+                     affinity:
+                       nodeAffinity:
+                         requiredDuringSchedulingIgnoredDuringExecution:
+                           nodeSelectorTerms:
+                           - matchExpressions:
+                             - key: node-role.kubernetes.io/controlplane
+                               operator: In
+                               values:
+                               - "true"
                   config:
                      global:
                        smtp_smarthost: {{ galaxy_pro_smtp_server }}
@@ -1219,6 +1394,15 @@ apps:
                              severity: critical
                            receiver: 'email'
                grafana:
+                  affinity:
+                     nodeAffinity:
+                       requiredDuringSchedulingIgnoredDuringExecution:
+                         nodeSelectorTerms:
+                         - matchExpressions:
+                           - key: node-role.kubernetes.io/controlplane
+                             operator: In
+                             values:
+                             - "true"
                   adminPassword: {{ random_client_secret }}
                   grafana.ini:
                      server:
@@ -1250,6 +1434,38 @@ apps:
                      limits:
                         cpu: 1000m
                         memory: 2000Mi
+                   affinity: |
+                     podAntiAffinity:
+                       requiredDuringSchedulingIgnoredDuringExecution:
+                         - labelSelector:
+                             matchLabels:
+                               {{- include "keycloak.selectorLabels" . | nindent 10 }}
+                             matchExpressions:
+                               - key: role
+                                 operator: NotIn
+                                 values:
+                                   - test
+                           topologyKey: kubernetes.io/hostname
+                       preferredDuringSchedulingIgnoredDuringExecution:
+                         - weight: 100
+                           podAffinityTerm:
+                             labelSelector:
+                               matchLabels:
+                                 {{- include "keycloak.selectorLabels" . | nindent 12 }}
+                               matchExpressions:
+                                 - key: role
+                                   operator: NotIn
+                                   values:
+                                     - test
+                             topologyKey: failure-domain.beta.kubernetes.io/zone
+                     nodeAffinity:
+                       requiredDuringSchedulingIgnoredDuringExecution:
+                         nodeSelectorTerms:
+                         - matchExpressions:
+                           - key: node-role.kubernetes.io/controlplane
+                             operator: In
+                             values:
+                             - "true"
                    password: "{{ rancher_password }}"
                    ingress:
                      enabled: true
