@@ -229,11 +229,9 @@ apps:
                                 resource_set: small
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
-                                - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/bwameth/bwameth/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/hisat2/hisat2/.*
-                                - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/valet/valet/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/varscan_somatic/varscan_somatic/.*
                                 - toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/.*
@@ -241,6 +239,7 @@ apps:
                               container:
                                 resource_set: medium
                             - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
                                 - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
                                 - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*
                                 - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*
@@ -254,10 +253,17 @@ apps:
                                 - toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
+                              container:
+                                resource_set: large
+                            - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
                                 - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
                               container:
-                                resource_set: large
+                                resource_set: 2xlarge
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                              container:
+                                resource_set: mlarge
                           resources:
                             resource_sets:
                               small:
@@ -281,6 +287,20 @@ apps:
                                 limits:
                                   cpu: 8
                                   memory: 16G
+                              2xlarge:
+                                requests:
+                                  cpu: 12
+                                  memory: 20G
+                                limits:
+                                  cpu: 12
+                                  memory: 24G
+                              mlarge:
+                                requests:
+                                  cpu: 2
+                                  memory: 16G
+                                limits:
+                                  cpu: 4
+                                  memory: 20G
                             default_resource_set: small
                     image:
                       repository: galaxyworks/galaxy-pro
