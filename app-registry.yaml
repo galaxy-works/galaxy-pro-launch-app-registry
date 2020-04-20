@@ -432,7 +432,6 @@ apps:
                                 <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
                                   <param id="k8s_use_service_account">true</param>
                                   <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-data-pvc:{{ '{{' }} .Values.cvmfs.data.mountPath {{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-main-pvc:{{ '{{' }} .Values.cvmfs.main.mountPath {{ '}}' }}</param>
-                                  <param id="k8s_namespace">{{ '{{' }} .Release.Namespace {{ '}}' }}</param>
                                   <!-- Must be DNS friendly and less than 20 characters -->
                                   <param id="k8s_galaxy_instance_id">{{ '{{' }} .Release.Name {{ '}}' }}</param>
                                   <param id="k8s_run_as_user_id">101</param>
@@ -769,7 +768,7 @@ apps:
                        requiredDuringSchedulingIgnoredDuringExecution:
                          - labelSelector:
                              matchLabels:
-                               {{- include "keycloak.selectorLabels" . | nindent 10 }}
+                               {{ '{{' }}- include "keycloak.selectorLabels" . | nindent 10 {{ '}}' }}
                              matchExpressions:
                                - key: role
                                  operator: NotIn
@@ -781,7 +780,7 @@ apps:
                            podAffinityTerm:
                              labelSelector:
                                matchLabels:
-                                 {{- include "keycloak.selectorLabels" . | nindent 12 }}
+                                 {{ '{{' }}- include "keycloak.selectorLabels" . | nindent 12 {{ '}}' }}
                                matchExpressions:
                                  - key: role
                                    operator: NotIn
@@ -1142,7 +1141,7 @@ apps:
                                 <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4" />
                                 <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
                                   <param id="k8s_use_service_account">true</param>
-                                  <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }}</param>
+                                  <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-data-pvc:{{ '{{' }} .Values.cvmfs.data.mountPath {{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-main-pvc:{{ '{{' }} .Values.cvmfs.main.mountPath {{ '}}' }}</param>
                                   <param id="k8s_namespace">{{ '{{' }} .Release.Namespace {{ '}}' }}</param>
                                   <!-- Must be DNS friendly and less than 20 characters -->
                                   <param id="k8s_galaxy_instance_id">{{ '{{' }} .Release.Name {{ '}}' }}</param>
@@ -1459,7 +1458,7 @@ apps:
                        requiredDuringSchedulingIgnoredDuringExecution:
                          - labelSelector:
                              matchLabels:
-                               {{- include "keycloak.selectorLabels" . | nindent 10 }}
+                               {{ '{{' }}- include "keycloak.selectorLabels" . | nindent 10 {{ '}}' }}
                              matchExpressions:
                                - key: role
                                  operator: NotIn
@@ -1471,7 +1470,7 @@ apps:
                            podAffinityTerm:
                              labelSelector:
                                matchLabels:
-                                 {{- include "keycloak.selectorLabels" . | nindent 12 }}
+                                 {{ '{{' }}- include "keycloak.selectorLabels" . | nindent 12 {{ '}}' }}
                                matchExpressions:
                                  - key: role
                                    operator: NotIn
