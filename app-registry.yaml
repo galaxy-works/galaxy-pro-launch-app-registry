@@ -912,7 +912,7 @@ apps:
             securityGroup: cloudlaunch-cm2
           vmType: m1.medium
         config_cloudman2:
-          cm_boot_image: galaxyworks/galaxy-pro-boot
+          cm_boot_image: galaxyworks/galaxy-pro-boot:1.0.0
           cm_helm_values: |
             cluster_type: KUBE_RANCHER
             rancher_url: "https://{{ rancher_server }}:{{ rancher_port }}"
@@ -923,17 +923,17 @@ apps:
 
             helmsman_config:
               repositories:
-                 - name: cloudve
-                   url: https://raw.githubusercontent.com/CloudVE/helm-charts/master/
+                 - name: galaxyworks
+                   url: https://raw.githubusercontent.com/galaxy-works/helm-charts/1.0.0/
               charts:
                 cvmfs:
-                  name: cloudve/galaxy-cvmfs-csi
+                  name: galaxyworks/galaxy-cvmfs-csi
                   namespace: cvmfs
                   values:
                     cache:
                       size: 30000
                 galaxy:
-                  name: cloudve/galaxy
+                  name: galaxyworks/galaxy
                   namespace: initial
                   affinity:
                     nodeAffinity:
@@ -959,6 +959,7 @@ apps:
                                 <client_secret>{{ '{{' }}.Values.helmsman_config.charts.galaxy.oidc_client.client_secret {{ '}}' }}</client_secret>
                                 <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback</redirect_uri>
                                 <realm>master</realm>
+                                <enable_idp_logout>true</enable_idp_logout>
                             </provider>
                         </OIDC>
                   values:
@@ -967,8 +968,8 @@ apps:
                         backup.velero.io/backup-volumes: galaxy-data
                     resources:
                       requests:
-                        cpu: 200m
-                        memory: 2500Mi
+                        cpu: 300m
+                        memory: 2000Mi
                       limits:
                         cpu: 3000m
                         memory: 7000Mi
@@ -979,17 +980,17 @@ apps:
                             - tool_ids:
                                 - Summary_Statistics1
                               container:
-                                docker_container_id_override: cloudve/gsummary:latest
+                                docker_container_id_override: galaxyworks/gsummary:1.0.0
                                 resource_set: small
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_sam_fasta_index_builder/sam_fasta_index_builder/.*
                               container:
-                                docker_container_id_override: cloudve/sam-fasta-dm:latest
+                                docker_container_id_override: galaxyworks/sam-fasta-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_bwa_mem_index_builder/bwa_mem_index_builder_data_manager/.*
                               container:
-                                docker_container_id_override: cloudve/bwa-dm:latest
+                                docker_container_id_override: galaxyworks/bwa-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
                                 - sort1
@@ -1002,21 +1003,87 @@ apps:
                                 - snp_substitution_viz
                                 - variant_summary_viz
                               container:
-                                docker_container_id_override: galaxyworks/customviztools:latest
+                                docker_container_id_override: galaxyworks/customviztools:1.0.0
                                 resource_set: small
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/bwameth/bwameth/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/hisat2/hisat2/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/valet/valet/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/varscan_somatic/varscan_somatic/.*
+                                - toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
+                              container:
+                                resource_set: medium
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
+                                - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_pe_fragmentsize/deeptools_bam_pe_fragmentsize/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bigwig_compare/deeptools_bigwig_compare/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_compute_gc_bias/deeptools_compute_gc_bias/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_compute_matrix/deeptools_compute_matrix/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_correct_gc_bias/deeptools_correct_gc_bias/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bigwig_summary/deeptools_multi_bigwig_summary/.*
+                                - toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
+                              container:
+                                resource_set: large
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
+                                - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+                              container:
+                                resource_set: 2xlarge
+                            - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                              container:
+                                resource_set: mlarge
                           resources:
                             resource_sets:
                               small:
                                 requests:
-                                  cpu: 0.25
+                                  cpu: 1
                                   memory: 2G
                                 limits:
+                                  cpu: 2
+                                  memory: 5G
+                              medium:
+                                requests:
+                                  cpu: 2
+                                  memory: 4G
+                                limits:
                                   cpu: 4
+                                  memory: 10G
+                              large:
+                                requests:
+                                  cpu: 4
+                                  memory: 8G
+                                limits:
+                                  cpu: 8
                                   memory: 16G
+                              2xlarge:
+                                requests:
+                                  cpu: 12
+                                  memory: 20G
+                                limits:
+                                  cpu: 12
+                                  memory: 24G
+                              mlarge:
+                                requests:
+                                  cpu: 2
+                                  memory: 16G
+                                limits:
+                                  cpu: 4
+                                  memory: 20G
                             default_resource_set: small
                     image:
                       repository: galaxyworks/galaxy-pro
-                      tag: 20.01-1.0.0
+                      tag: 20.05.1
                     configs:
                       galaxy.yml:
                         galaxy:
@@ -1048,7 +1115,7 @@ apps:
                           enable_beta_gdpr: true
                           enable_tool_tags: true
                           auth_config_file: config/auth_conf.xml
-                          tool_config_file: "/galaxy/server/config/tool_conf.xml,/galaxy/server/config/shed_tool_conf.xml"
+                          tool_config_file: "/galaxy/server/config/shed_tool_conf.xml,/galaxy/server/config/tool_conf.xml"
                       auth_conf.xml: |
                         <?xml version="1.0"?>
                         <auth>
@@ -1144,7 +1211,7 @@ apps:
                                 <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
                                   <param id="k8s_use_service_account">true</param>
                                   <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-data-pvc:{{ '{{' }} .Values.cvmfs.data.mountPath {{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-main-pvc:{{ '{{' }} .Values.cvmfs.main.mountPath {{ '}}' }}</param>
-                                  <param id="k8s_namespace">{{ '{{' }} .Release.Namespace {{ '}}' }}</param>
+                                  <param id="k8s_namespace">{{ .Release.Namespace }}</param>
                                   <!-- Must be DNS friendly and less than 20 characters -->
                                   <param id="k8s_galaxy_instance_id">{{ '{{' }} .Release.Name {{ '}}' }}</param>
                                   <param id="k8s_run_as_user_id">101</param>
@@ -1180,8 +1247,8 @@ apps:
                                 </destination>
                             </destinations>
                             <limits>
-                                <limit type="registered_user_concurrent_jobs">5</limit>
-                                <limit type="anonymous_user_concurrent_jobs">2</limit>
+                                <limit type="registered_user_concurrent_jobs">10</limit>
+                                <limit type="anonymous_user_concurrent_jobs">0</limit>
                             </limits>
                         </job_conf>
                     extraFileMappings:
@@ -1272,24 +1339,45 @@ apps:
                   rabbitmqErlangCookie: {{ random_client_secret }}{{ random_client_secret }}
                image:
                   repository: galaxyworks/cloudman-ui-pro
-                  tag: latest
+                  tag: 1.0.0
                resources:
                   requests:
                     cpu: 100m
-                    memory: 200Mi
+                    memory: 500Mi
                   limits:
                     cpu: 1000m
-                    memory: 500Mi
+                    memory: 3000Mi
+               affinity:
+                  nodeAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      nodeSelectorTerms:
+                      - matchExpressions:
+                        - key: node-role.kubernetes.io/controlplane
+                          operator: In
+                          values:
+                          - "true"
                cloudlaunchserver:
+                  image:
+                    repository: galaxyworks/cloudman-server
+                    tag: 1.0.0
                   podAnnotations:
                     iam.amazonaws.com/role: "{{ cm_deployment_name }}-gxy-pro-cm-node"
                   resources:
                     requests:
                       cpu: 500m
-                      memory: 500Mi
+                      memory: 1500Mi
                     limits:
                       cpu: 1000m
-                      memory: 1000Mi
+                      memory: 5000Mi
+                  affinity:
+                    nodeAffinity:
+                      requiredDuringSchedulingIgnoredDuringExecution:
+                        nodeSelectorTerms:
+                        - matchExpressions:
+                          - key: node-role.kubernetes.io/controlplane
+                            operator: In
+                            values:
+                            - "true"
                   admin_password: "{{ rancher_password }}"
                   postgresql:
                      postgresqlPassword: {{ random_client_secret }}
@@ -1415,6 +1503,7 @@ apps:
                              severity: critical
                            receiver: 'email'
                grafana:
+                  adminPassword: {{ random_client_secret }}
                   affinity:
                      nodeAffinity:
                        requiredDuringSchedulingIgnoredDuringExecution:
@@ -1424,7 +1513,6 @@ apps:
                              operator: In
                              values:
                              - "true"
-                  adminPassword: {{ random_client_secret }}
                   grafana.ini:
                      server:
                         root_url: "https://{{ rancher_server }}/grafana"
@@ -1506,7 +1594,7 @@ apps:
             {% endif %}
                    extraInitContainers: |
                      - name: theme-provider
-                       image: galaxyworks/galaxy-pro-keycloak-theme:latest
+                       image: galaxyworks/galaxy-pro-keycloak-theme:1.0.0
                        imagePullPolicy: IfNotPresent
                        command:
                          - sh
