@@ -215,10 +215,20 @@ apps:
                                 docker_container_id_override: galaxyworks/bwa-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.2.1
+                              container:
+                                docker_container_id_override: galaxyworks/pygenometracks:latest
+                                resource_set: small
+                            - tool_ids:
                                 - sort1
                                 - Grouping1
                               container:
                                 docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                                resource_set: small
+                            - tool_ids:
+                                - param_value_from_file
+                              container:
+                                docker_container_id_override: cloudve/param_value_from_file:latest
                                 resource_set: small
                             - tool_ids:
                                 - read_mapping_viz
@@ -265,6 +275,11 @@ apps:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
                               container:
                                 resource_set: mlarge
+                            - tool_ids:
+                                - advaita_send_DE_data
+                                - advaita_send_VCF_data
+                              container:
+                                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
                           resources:
                             resource_sets:
                               small:
@@ -992,10 +1007,20 @@ apps:
                                 docker_container_id_override: galaxyworks/bwa-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
+                                - toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.2.1
+                              container:
+                                docker_container_id_override: galaxyworks/pygenometracks:latest
+                                resource_set: small
+                            - tool_ids:
                                 - sort1
                                 - Grouping1
                               container:
                                 docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                                resource_set: small
+                            - tool_ids:
+                                - param_value_from_file
+                              container:
+                                docker_container_id_override: cloudve/param_value_from_file:latest
                                 resource_set: small
                             - tool_ids:
                                 - read_mapping_viz
@@ -1042,6 +1067,11 @@ apps:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
                               container:
                                 resource_set: mlarge
+                            - tool_ids:
+                                - advaita_send_DE_data
+                                - advaita_send_VCF_data
+                              container:
+                                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
                           resources:
                             resource_sets:
                               small:
