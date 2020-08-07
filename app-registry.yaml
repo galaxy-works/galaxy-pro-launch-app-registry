@@ -953,12 +953,11 @@ apps:
                       oidc_backends_config.xml: |
                         <?xml version="1.0"?>
                         <OIDC>
-                            <provider name="custos">
-                                <url>https://{{ rancher_server }}/auth</url>
+                            <provider name="keycloak">
+                                <url>https://{{ rancher_server }}/auth/realms/master</url>
                                 <client_id>galaxy-auth</client_id>
                                 <client_secret>{{ '{{' }}.Values.helmsman_config.charts.galaxy.oidc_client.client_secret {{ '}}' }}</client_secret>
-                                <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback</redirect_uri>
-                                <realm>master</realm>
+                                <redirect_uri>https://{{ rancher_server }}{{ '{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/keycloak/callback</redirect_uri>
                                 <enable_idp_logout>true</enable_idp_logout>
                             </provider>
                         </OIDC>
