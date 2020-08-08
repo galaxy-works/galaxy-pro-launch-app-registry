@@ -939,7 +939,7 @@ apps:
             helmsman_config:
               repositories:
                  - name: galaxyworks
-                   url: https://raw.githubusercontent.com/galaxy-works/helm-charts/1.0.0/
+                   url: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
               charts:
                 cvmfs:
                   name: galaxyworks/galaxy-cvmfs-csi
