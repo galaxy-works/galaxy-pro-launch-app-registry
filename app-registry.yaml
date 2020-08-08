@@ -1149,7 +1149,7 @@ apps:
                         <?xml version="1.0"?>
                         <auth>
                         </auth>
-                      tool_conf.xml: ~
+                      tool_conf.xml: ""
                       integrated_tool_panel.xml: |
                         <?xml version="1.0"?>
                         <toolbox>
