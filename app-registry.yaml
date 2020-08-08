@@ -962,7 +962,7 @@ apps:
                   oidc_client:
                     client_secret: {{ random_client_secret }}
                     redirect_uris:
-                      - '{{ '{{' }} include "cloudman.root_url" . {{ '}}{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/custos/callback'
+                      - '{{ '{{' }} include "cloudman.root_url" . {{ '}}{{' }} .Values.helmsman_config.charts.galaxy.values.ingress.path {{ '}}' }}/authnz/keycloak/callback'
                   tplValues:
                     configs:
                       oidc_backends_config.xml: |
@@ -1149,10 +1149,13 @@ apps:
                         <?xml version="1.0"?>
                         <auth>
                         </auth>
+                      tool_conf.xml: ~
                       integrated_tool_panel.xml: |
                         <?xml version="1.0"?>
                         <toolbox>
                             <section id="get_data" name="Get Data" version="">
+                            </section>
+                            <section id="send_data" name="Send Data" version="">
                             </section>
                             <section id="collection_operations" name="Collection Operations" version="">
                             </section>
