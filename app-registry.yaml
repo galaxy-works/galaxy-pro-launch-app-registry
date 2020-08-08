@@ -1129,7 +1129,7 @@ apps:
                           interactivetools_enable: false
                           visualizations_visible: false
                           brand:
-                          user_preferences_extra_conf_path:
+                          user_preferences_extra_conf_path: config/user_preferences_extra_conf.yml
                           logo_url: /
                           logo_src: https://galaxyworks.io/logo.svg
                           require_login: true
