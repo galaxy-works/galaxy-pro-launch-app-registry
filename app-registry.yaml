@@ -393,6 +393,8 @@ apps:
                             </section>
                             <section id="convert_formats" name="Convert Formats" version="">
                             </section>
+                            <section id="nanopore" name="Nanopore" version="">
+                            </section>
                             <label id="common_genomics_tools_label" text="Common Genomics Tools" version="" />
                             <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals" version="">
                             </section>
@@ -1188,6 +1190,8 @@ apps:
                                 <label id="bcftools_label" text="BCFTools" version="" />
                             </section>
                             <section id="convert_formats" name="Convert Formats" version="">
+                            </section>
+                            <section id="nanopore" name="Nanopore" version="">
                             </section>
                             <label id="common_genomics_tools_label" text="Common Genomics Tools" version="" />
                             <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals" version="">
