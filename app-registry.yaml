@@ -1115,7 +1115,7 @@ apps:
                             default_resource_set: small
                     image:
                       repository: galaxyworks/galaxy-pro
-                      tag: 20.05.1
+                      tag: 20.05.2
                     configs:
                       galaxy.yml:
                         galaxy:
