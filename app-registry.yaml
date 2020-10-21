@@ -1018,7 +1018,8 @@ apps:
                                 docker_container_id_override: galaxyworks/bwa-dm:1.0.0
                                 resource_set: small
                             - tool_ids:
-                                - toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.2.1
+                                - pygenomeTracks
+                                - toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/*
                               container:
                                 docker_container_id_override: galaxyworks/pygenometracks:latest
                                 resource_set: small
