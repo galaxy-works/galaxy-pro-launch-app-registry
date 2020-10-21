@@ -276,6 +276,7 @@ apps:
                                 - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
                                 - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_image/.*
                               container:
                                 resource_set: 2xlarge
                             - tool_ids:
