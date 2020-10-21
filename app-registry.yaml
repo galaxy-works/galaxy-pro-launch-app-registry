@@ -264,11 +264,18 @@ apps:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
                               container:
                                 resource_set: large
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
                                 - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
                               container:
                                 resource_set: 2xlarge
                             - tool_ids:
@@ -1059,6 +1066,11 @@ apps:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
                                 - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
                               container:
                                 resource_set: large
                             - tool_ids:
@@ -1068,6 +1080,8 @@ apps:
                                 resource_set: 2xlarge
                             - tool_ids:
                                 - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                                - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
+                                - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
                               container:
                                 resource_set: mlarge
                             - tool_ids:
@@ -1115,7 +1129,7 @@ apps:
                             default_resource_set: small
                     image:
                       repository: galaxyworks/galaxy-pro
-                      tag: 20.05.2
+                      tag: 20.05.3
                     configs:
                       galaxy.yml:
                         galaxy:
