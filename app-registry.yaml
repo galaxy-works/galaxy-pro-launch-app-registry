@@ -65,17 +65,18 @@ apps:
         galaxy-pro-launch.plugins.galaxy_pro_app.GalaxyProApp
       default_launch_config:
         config_appliance:
-          inventoryTemplate: |-
-            ${host}
-
-            [all:vars]
-            ansible_ssh_port=22
-            ansible_user='${user}'
-            ansible_ssh_private_key_file=pk
-            ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-          repository: https://github.com/CloudVE/ansible-docker-boot
           runner: ansible
           sshUser: ubuntu
+          playbooks:
+            - url: https://github.com/CloudVE/ansible-docker-boot
+              inventory_template: |-
+                ${host}
+
+                [all:vars]
+                ansible_ssh_port=22
+                ansible_user='${user}'
+                ansible_ssh_private_key_file=pk
+                ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
         config_cloudlaunch:
           firewall:
           - rules:
@@ -869,24 +870,36 @@ apps:
         galaxy-pro-launch.plugins.galaxy_pro_app.GalaxyProApp
       default_launch_config:
         config_appliance:
-          inventoryTemplate: |-
-            [controllers]
-            ${host}
-
-            [agents]
-
-            [rke_cluster:children]
-            controllers
-            agents
-
-            [all:vars]
-            ansible_ssh_port=22
-            ansible_user='${user}'
-            ansible_ssh_private_key_file=pk
-            ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
-          repository: https://github.com/CloudVE/cloudman-boot
           runner: ansible
           sshUser: ubuntu
+          playbooks:
+            - url: https://github.com/CloudVE/cloudman-boot
+              ordinal: 0
+              inventory_template: |-
+                [controllers]
+                ${host}
+
+                [agents]
+
+                [rke_cluster:children]
+                controllers
+                agents
+
+                [all:vars]
+                ansible_ssh_port=22
+                ansible_user='${user}'
+                ansible_ssh_private_key_file=pk
+                ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+            - url: https://github.com/galaxy-works/galaxy-pro-boot
+              ordinal: 1
+              inventory_template: |-
+                ${host}
+
+                [all:vars]
+                ansible_ssh_port=22
+                ansible_user='${user}'
+                ansible_ssh_private_key_file=pk
+                ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
         config_cloudlaunch:
           firewall:
           - rules:
@@ -945,11 +958,11 @@ apps:
             securityGroup: cloudlaunch-cm2
           vmType: m1.medium
         config_cloudman2:
-          cm_boot_image: galaxyworks/galaxy-pro-boot:1.0.0
+          cm_charts_repo: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
           cm_helm_values: |
             cluster_type: KUBE_RKE
+            rke_registration_server: {{ rke_registration_server }}
             rke_registration_token: {{ rke_registration_token }}
-            cm_initial_cluster_data: "{{ cm_initial_cluster_data|default('') }}"
 
             helmsman_config:
               repositories:
