@@ -39,7 +39,7 @@ install_templates:
     template: |
       image:
         repository: galaxyworks/galaxy-pro
-        tag: 20.05.1
+        tag: 20.09.1
       persistence:
         storageClass: efs
       affinity:
