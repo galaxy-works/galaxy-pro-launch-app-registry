@@ -968,9 +968,23 @@ apps:
               repositories:
                  - name: galaxyworks
                    url: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
+                 - name: rancher
+                   url: https://releases.rancher.com/server-charts/stable
               template_registries:
                 - name: galaxypro
                   url: https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
+              charts:
+                rancher:
+                  name: rancher/rancher
+                  namespace: cattle-system
+                  create_namespace: true
+                  values:
+                    rancher:
+            {% if (cluster_hostname | ipaddr) %}
+                        hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
+            {% else %}
+                        hostname: rancher.{{ cluster_hostname }}.xip.io
+            {% endif %}
 
             projman_config:
               projects:
