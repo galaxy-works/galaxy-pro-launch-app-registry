@@ -26,11 +26,11 @@ install_templates:
     icon_url: https://galaxyworks.io/static/gw-logo-white-transparent-db6da9a54631ebc0482750641e7fdf3c.png
     screenshot_url: assets/images/screenshot_galaxy.png
     context:
-      domain: '{{ .Values.global.domain }}'
-      influxdb_url: '{{ include "cloudman.influxdb_url_cluster" . }}'
-      influxdb_database: '{{ include "cloudman.influxdb_database" . }}'
-      influxdb_username: '{{ .Values.influxdb.setDefaultUser.username }}'
-      influxdb_password: '{{ .Values.influxdb.setDefaultUser.password }}'
+      domain:
+      influxdb_url:
+      influxdb_database:
+      influxdb_username:
+      influxdb_password:
       galaxy_pro_smtp_server:
       galaxy_pro_smtp_username:
       galaxy_pro_smtp_password:
