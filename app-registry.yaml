@@ -969,7 +969,8 @@ apps:
                  - name: galaxyworks
                    url: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
               template_registries:
-                - https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
+                - name: galaxypro
+                  url: https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
 
             projman_config:
               projects:
