@@ -974,6 +974,7 @@ apps:
                 - name: galaxypro
                   url: https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
               charts:
+                proxyinjector: ~
                 rancher:
                   name: rancher/rancher
                   namespace: cattle-system
