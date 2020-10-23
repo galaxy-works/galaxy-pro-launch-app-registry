@@ -996,7 +996,7 @@ apps:
                     requiredDuringSchedulingIgnoredDuringExecution:
                       nodeSelectorTerms:
                       - matchExpressions:
-                        - key: node-role.kubernetes.io/controlplane
+                        - key: node-role.kubernetes.io/master
                           operator: In
                           values:
                           - "true"
@@ -1018,7 +1018,7 @@ apps:
                       requiredDuringSchedulingIgnoredDuringExecution:
                         nodeSelectorTerms:
                         - matchExpressions:
-                          - key: node-role.kubernetes.io/controlplane
+                          - key: node-role.kubernetes.io/master
                             operator: In
                             values:
                             - "true"
@@ -1034,7 +1034,7 @@ apps:
                             requiredDuringSchedulingIgnoredDuringExecution:
                               nodeSelectorTerms:
                               - matchExpressions:
-                                - key: node-role.kubernetes.io/controlplane
+                                - key: node-role.kubernetes.io/master
                                   operator: In
                                   values:
                                   - "true"
@@ -1073,7 +1073,7 @@ apps:
                       requiredDuringSchedulingIgnoredDuringExecution:
                         nodeSelectorTerms:
                         - matchExpressions:
-                          - key: node-role.kubernetes.io/controlplane
+                          - key: node-role.kubernetes.io/master
                             operator: In
                             values:
                             - "true"
@@ -1083,7 +1083,7 @@ apps:
                       requiredDuringSchedulingIgnoredDuringExecution:
                         nodeSelectorTerms:
                         - matchExpressions:
-                          - key: node-role.kubernetes.io/controlplane
+                          - key: node-role.kubernetes.io/master
                             operator: In
                             values:
                             - "true"
@@ -1096,7 +1096,7 @@ apps:
                          requiredDuringSchedulingIgnoredDuringExecution:
                            nodeSelectorTerms:
                            - matchExpressions:
-                             - key: node-role.kubernetes.io/controlplane
+                             - key: node-role.kubernetes.io/master
                                operator: In
                                values:
                                - "true"
@@ -1153,7 +1153,7 @@ apps:
                        requiredDuringSchedulingIgnoredDuringExecution:
                          nodeSelectorTerms:
                          - matchExpressions:
-                           - key: node-role.kubernetes.io/controlplane
+                           - key: node-role.kubernetes.io/master
                              operator: In
                              values:
                              - "true"
@@ -1215,7 +1215,7 @@ apps:
                        requiredDuringSchedulingIgnoredDuringExecution:
                          nodeSelectorTerms:
                          - matchExpressions:
-                           - key: node-role.kubernetes.io/controlplane
+                           - key: node-role.kubernetes.io/master
                              operator: In
                              values:
                              - "true"
