@@ -4,10 +4,11 @@ install_templates:
     chart: projman
     display_name: Project Management
     summary: For internal use only
-    context:
-      template: |
-        projectName: "{{context.project.namespace}}"
-
+    template: |
+      projectName: "{{context.project.namespace}}"
+      secrets:
+        oidc-client-id: "projman-{{context.project.namespace}}"
+        oidc-client-secret: "{{ random_alphanumeric(20) }}"
   galaxy:
     repo: galaxyworks
     chart: galaxy
