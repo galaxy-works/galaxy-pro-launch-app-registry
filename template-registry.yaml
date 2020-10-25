@@ -9,6 +9,285 @@ install_templates:
       secrets:
         oidc-client-id: "projman-{{context.project.namespace}}"
         oidc-client-secret: "{{ random_alphanumeric(20) }}"
+
+      jobs:
+        keycloak:
+          containers:
+          - name: "{{context.project.namespace}}-keycloak-projman-job"
+            image: "gempesaw/curl-jq"
+            command: ["/bin/sh", "/kc-init/update_keycloak.sh"]
+            volumeMounts:
+              - name: kc-init
+                mountPath: /kc-init
+                readOnly: true
+            env:
+              - name: CLIENT_ID
+                value: "{{context.project.oidc_client_id}}"
+              - name: KEYCLOAK_HTTP_PASSWORD
+                value: "{{context.keycloak_password}}"
+              - name: REDIRECT_URIS
+                value: "https://{{context.domain}}/{{context.project.namespace}}/*"
+              - name: CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{context.project.namespace}}-projman-secrets"
+                    key: oidc-client-secret
+              - name: KC_URL
+                value: "https://{{context.domain}}/auth"
+          volumes:
+            - name: kc-init
+              configMap:
+                name: {{context.project.namespace}}-projman-configs
+                items:
+                  - key: "update_keycloak.sh"
+                    path: "update_keycloak.sh"
+
+      configs:
+        update_keycloak.sh: |
+          #!/bin/sh
+
+          # abort if any command fails
+          set -e
+          username="admin"
+
+          # get auth token
+          token=$(curl -k -s -d "client_id=admin-cli" -d "username=$username" -d "password=$KEYCLOAK_HTTP_PASSWORD" -d "grant_type=password" \
+                 "$KC_URL/realms/master/protocol/openid-connect/token" | jq -r '.access_token')
+
+          # Get ID for new browser flow
+          flowid=$(curl -X GET -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/authentication/flows" | jq -r '.[] | select(.alias=="BrowserFlowWithRoleRestrictions") | .id')
+
+          project_client=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" | \
+          jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.clientId==$CLIENT_ID)')
+
+          if [ -z "$project_client" ]
+          then
+                project_client=$(cat <<EOF
+          {
+              "clientId": "$CLIENT_ID",
+              "enabled": true,
+              "clientAuthenticatorType": "client-secret",
+              "authenticationFlowBindingOverrides":
+              {
+                "browser": "$flowid"
+              },
+              "redirectUris": ["$REDIRECT_URIS"],
+              "publicClient": false,
+              "secret": "$CLIENT_SECRET",
+              "protocol": "openid-connect",
+              "fullScopeAllowed": true,
+              "protocolMappers": [
+                  {
+                      "name": "$CLIENT_ID-audience",
+                      "protocol": "openid-connect",
+                      "protocolMapper": "oidc-audience-mapper",
+                      "consentRequired": false,
+                      "config": {
+                          "included.client.audience": "$CLIENT_ID",
+                          "id.token.claim": "false",
+                          "access.token.claim": "true"
+                      }
+                  }
+              ]
+          }
+          EOF
+                )
+
+                # add new client
+                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" -d "$project_client"
+                clientuuid=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.clientId==$CLIENT_ID) | .id')
+                roledata=$(cat <<EOF
+          {
+              "name": "$CLIENT_ID"
+          }
+          EOF
+                )
+                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients/$clientuuid/roles" -d "$roledata"
+                roleid=$(curl -k -X GET -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients/$clientuuid/roles" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.name==$CLIENT_ID) | .id')
+
+
+                userdata=$(cat <<EOF
+          {
+              "enabled":true,
+              "attributes":{},
+              "username":"$CLIENT_ID",
+              "emailVerified":"",
+              "email":"$CLIENT_ID@gvl.org",
+              "firstName":"$CLIENT_ID",
+              "lastName":"$CLIENT_ID"
+          }
+          EOF
+                )
+
+                # Create user for this project
+                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users" -d "$userdata"
+
+                useruuid=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.username==$CLIENT_ID) | .id')
+
+                curl -k -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users/$useruuid/reset-password" -d "{\"type\":\"password\",\"value\":\"changeme\",\"temporary\":true}"
+
+                rolemapping=$(cat <<EOF
+          [{
+            "id": "$roleid",
+            "name": "$CLIENT_ID",
+            "composite": false,
+            "clientRole": true,
+            "containerId": "$clientuuid"
+          }]
+          EOF
+                )
+
+                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users/$useruuid/role-mappings/clients/$clientuuid" -d "$rolemapping"
+          else
+                echo "The $CLIENT_ID client already exists."
+          fi
+
+        server.css: |
+          #header .logo,
+          #firstrunwizard .logo {
+            background-image: url('../img/gvllogo.svg');
+            width: 80px;
+          }
+
+        defaults.php: |
+          <?php
+          /**
+           * @author Björn Schießle <schiessle@owncloud.com>
+           * @author Jan-Christoph Borchardt, http://jancborchardt.net
+           * @copyright Copyright (c) 2016, ownCloud, Inc.
+           * @license AGPL-3.0
+           *
+           * This code is free software: you can redistribute it and/or modify
+           * it under the terms of the GNU Affero General Public License, version 3,
+           * as published by the Free Software Foundation.
+           *
+           * This program is distributed in the hope that it will be useful,
+           * but WITHOUT ANY WARRANTY; without even the implied warranty of
+           * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+           * GNU Affero General Public License for more details.
+           *
+           * You should have received a copy of the GNU Affero General Public License, version 3,
+           * along with this program.  If not, see <http://www.gnu.org/licenses/>
+           */
+
+          class OC_Theme {
+
+            /**
+             * Returns the base URL
+             * @return string URL
+             */
+            public function getBaseUrl() {
+              return 'https://cloudve.org';
+            }
+
+            /**
+             * Returns the documentation URL
+             * @return string URL
+             */
+            public function getDocBaseUrl() {
+              return 'https://docs.nextcloud.com';
+            }
+
+            /**
+             * Returns the title
+             * @return string title
+             */
+            public function getTitle() {
+              return 'GVL';
+            }
+
+            /**
+             * Returns the short name of the software
+             * @return string title
+             */
+            public function getName() {
+              return 'GVL';
+            }
+
+            /**
+             * Returns the short name of the software containing HTML strings
+             * @return string title
+             */
+            public function getHTMLName() {
+              return 'GVL';
+            }
+
+            /**
+             * Returns entity (e.g. company name) - used for footer, copyright
+             * @return string entity name
+             */
+            public function getEntity() {
+              return 'CloudVE';
+            }
+
+            /**
+             * Returns slogan
+             * @return string slogan
+             */
+            public function getSlogan() {
+              return '';
+            }
+
+            /**
+             * Returns logo claim
+             * @return string logo claim
+             * @deprecated 13.0.0 not used anymore
+             */
+            public function getLogoClaim() {
+              return '';
+            }
+
+            /**
+             * Returns short version of the footer
+             * @return string short footer
+             */
+            public function getShortFooter() {
+              $footer = '© ' . date('Y') . ' <a href="' . $this->getBaseUrl() . '" target="_blank">' . $this->getEntity() . '</a>' .
+                '<br/>' . $this->getSlogan();
+
+              return $footer;
+            }
+
+            /**
+             * Returns long version of the footer
+             * @return string long footer
+             */
+            public function getLongFooter() {
+              $footer = '© ' . date('Y') . ' <a href="' . $this->getBaseUrl() . '" target="_blank">' . $this->getEntity() . '</a>' .
+                '<br/>' . $this->getSlogan();
+
+              return $footer;
+            }
+
+            /**
+             * Generate a documentation link for a given key
+             * @return string documentation link
+             */
+            public function buildDocLinkToKey($key) {
+              return $this->getDocBaseUrl() . '/server/15/go.php?to=' . $key;
+            }
+
+
+            /**
+             * Returns mail header color
+             * @return string
+             */
+            public function getColorPrimary() {
+              return '#2C3143';
+            }
+
+            /**
+             * Returns variables to overload defaults from core/css/variables.scss
+             * @return array
+             */
+            public function getScssVariables() {
+              return [
+                'color-primary' => '#2C3143'
+              ];
+            }
+
+          }
+
   galaxy:
     repo: galaxyworks
     chart: galaxy
@@ -47,7 +326,7 @@ install_templates:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: node-role.kubernetes.io/controlplane
+              - key: node-role.kubernetes.io/master
                 operator: In
                 values:
                 - "true"
@@ -74,7 +353,7 @@ install_templates:
               requiredDuringSchedulingIgnoredDuringExecution:
                 nodeSelectorTerms:
                 - matchExpressions:
-                  - key: node-role.kubernetes.io/controlplane
+                  - key: node-role.kubernetes.io/master
                     operator: In
                     values:
                     - "true"
@@ -100,6 +379,13 @@ install_templates:
                - "{{context.domain}}"
         path: {{context.project.access_path}}/galaxy
       configs:
+        oidc_config.xml: |
+          <?xml version="1.0"?>
+          <OIDC>
+              <Setter Property="VERIFY_SSL" Value="False" Type="bool"/>
+              <Setter Property="REQUESTS_TIMEOUT" Value="3600" Type="float"/>
+              <Setter Property="ID_TOKEN_MAX_AGE" Value="3600" Type="float"/>
+          </OIDC>
         oidc_backends_config.xml: |
           <?xml version="1.0"?>
           <OIDC>
@@ -259,7 +545,7 @@ install_templates:
                         requiredDuringSchedulingIgnoredDuringExecution:
                           nodeSelectorTerms:
                           - matchExpressions:
-                            - key: node-role.kubernetes.io/controlplane
+                            - key: node-role.kubernetes.io/master
                               operator: NotIn
                               values:
                               - "true"
