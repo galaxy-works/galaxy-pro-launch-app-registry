@@ -423,6 +423,7 @@ install_templates:
             user_preferences_extra_conf_path: config/user_preferences_extra_conf.yml
             logo_url: /
             logo_src: https://galaxyworks.io/logo.svg
+            display_galaxy_brand: false
             helpsite_url: https://galaxyworks.io/
             wiki_url: https://galaxyworks.io/
             support_url: mailto:support@galaxyworks.io
