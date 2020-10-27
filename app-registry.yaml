@@ -906,38 +906,6 @@ apps:
               from: '443'
               protocol: tcp
               to: '443'
-            - cidr: 0.0.0.0/0
-              from: '4430'
-              protocol: tcp
-              to: '4430'
-            - cidr: 0.0.0.0/0
-              from: '6443'
-              protocol: tcp
-              to: '6443'
-            - cidr: 0.0.0.0/0
-              from: '2379'
-              protocol: tcp
-              to: '2380'
-            - cidr: 0.0.0.0/0
-              from: '10250'
-              protocol: tcp
-              to: '10250'
-            - cidr: 0.0.0.0/0
-              from: '10251'
-              protocol: tcp
-              to: '10251'
-            - cidr: 0.0.0.0/0
-              from: '10252'
-              protocol: tcp
-              to: '10252'
-            - cidr: 0.0.0.0/0
-              from: '10256'
-              protocol: tcp
-              to: '10256'
-            - cidr: 0.0.0.0/0
-              from: '30000'
-              protocol: tcp
-              to: '32767'
             - from: '1'
               protocol: tcp
               src_group: cloudlaunch-cm2
