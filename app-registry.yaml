@@ -952,11 +952,6 @@ apps:
                     galaxy:
                       install_template: galaxy
                       context:
-                        domain: '{{ "{{" }} .Values.global.domain {{ "}}" }}'
-                        influxdb_url: '{{ "{{" }} include "cloudman.influxdb_url_cluster" . {{ "}}" }}'
-                        influxdb_database: '{{ "{{" }} include "cloudman.influxdb_database" . {{ "}}" }}'
-                        influxdb_username: '{{ "{{" }} .Values.influxdb.setDefaultUser.username {{ "}}" }}'
-                        influxdb_password: '{{ "{{" }} .Values.influxdb.setDefaultUser.password {{ "}}" }}'
                         galaxy_pro_smtp_server: '{{  galaxy_pro_smtp_server }}'
                         galaxy_pro_smtp_username: '{{  galaxy_pro_smtp_username }}'
                         galaxy_pro_smtp_password: '{{  galaxy_pro_smtp_password }}'

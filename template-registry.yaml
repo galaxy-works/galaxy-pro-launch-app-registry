@@ -24,16 +24,16 @@ install_templates:
               - name: CLIENT_ID
                 value: "{{context.project.oidc_client_id}}"
               - name: KEYCLOAK_HTTP_PASSWORD
-                value: "{{context.keycloak_password}}"
+                value: "{{context.global.keycloak_password}}"
               - name: REDIRECT_URIS
-                value: "https://{{context.domain}}/{{context.project.namespace}}/*"
+                value: "https://{{context.global.domain}}/{{context.project.namespace}}/*"
               - name: CLIENT_SECRET
                 valueFrom:
                   secretKeyRef:
                     name: "{{context.project.namespace}}-projman-secrets"
                     key: oidc-client-secret
               - name: KC_URL
-                value: "https://{{context.domain}}/auth"
+                value: "https://{{context.global.domain}}/auth"
           volumes:
             - name: kc-init
               configMap:
@@ -306,11 +306,6 @@ install_templates:
     icon_url: https://galaxyworks.io/static/gw-logo-white-transparent-db6da9a54631ebc0482750641e7fdf3c.png
     screenshot_url: assets/images/screenshot_galaxy.png
     context:
-      domain:
-      influxdb_url:
-      influxdb_database:
-      influxdb_username:
-      influxdb_password:
       galaxy_pro_smtp_server:
       galaxy_pro_smtp_username:
       galaxy_pro_smtp_password:
@@ -359,9 +354,9 @@ install_templates:
                     - "true"
       influxdb:
         enabled: true
-        url: "{{context.influxdb_url}}"
-        username: "{{context.influxdb_username}}"
-        password: "{{context.influxdb_password}}"
+        url: "{{context.global.influxdb_url}}"
+        username: "{{context.global.influxdb_username}}"
+        password: "{{context.global.influxdb_password}}"
       ingress:
         enabled: true
         annotations:
@@ -370,13 +365,13 @@ install_templates:
            nginx.ingress.kubernetes.io/secure-backends: "true"
         hosts:
           - ~
-          {%- if not (context.domain | ipaddr) %}
-          - "{{ context.domain }}"
+          {%- if not (context.global.domain | ipaddr) %}
+          - "{{ context.global.domain }}"
           {%- endif %}
         tls:
-           - secretName: "{{context.domain | replace('.', '-') }}-key"
+           - secretName: "{{context.global.domain | replace('.', '-') }}-key"
              hosts:
-               - "{{context.domain}}"
+               - "{{context.global.domain}}"
         path: {{context.project.access_path}}/galaxy
       configs:
         oidc_config.xml: |
@@ -390,10 +385,10 @@ install_templates:
           <?xml version="1.0"?>
           <OIDC>
               <provider name="keycloak">
-                  <url>https://{{context.domain}}/auth/realms/master</url>
+                  <url>https://{{context.global.domain}}/auth/realms/master</url>
                   <client_id>{{context.project.oidc_client_id}}</client_id>
                   <client_secret>{{context.project.oidc_client_secret}}</client_secret>
-                  <redirect_uri>https://{{context.domain}}{{context.project.access_path}}/galaxy/authnz/keycloak/callback</redirect_uri>
+                  <redirect_uri>https://{{context.global.domain}}{{context.project.access_path}}/galaxy/authnz/keycloak/callback</redirect_uri>
                   <enable_idp_logout>true</enable_idp_logout>
               </provider>
           </OIDC>
