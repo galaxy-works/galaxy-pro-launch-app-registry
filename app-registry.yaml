@@ -938,12 +938,19 @@ apps:
                   namespace: cattle-system
                   create_namespace: true
                   values:
-                    rancher:
             {% if (cluster_hostname | ipaddr) %}
-                        hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
+                    hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
             {% else %}
-                        hostname: rancher.{{ cluster_hostname }}.xip.io
+                    hostname: rancher.{{ cluster_hostname }}
             {% endif %}
+                    ingress:
+                      tls:
+                        source: letsEncrypt
+                    letsEncrypt:
+                      email: "admin@{{ cluster_hostname }}"
+                      environment: "production"
+                      ingress:
+                        class: nginx
 
             projman_config:
               projects:
