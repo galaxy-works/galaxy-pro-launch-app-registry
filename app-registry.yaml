@@ -576,7 +576,7 @@ apps:
 
             cloudlaunch:
                rabbitmq:
-                  rabbitmqErlangCookie: {{ random_client_secret }}{{ random_client_secret }}
+                  rabbitmqErlangCookie: {{ random_client_secret }}
                image:
                   repository: galaxyworks/cloudman-ui-pro
                   tag: 1.0.0
@@ -963,8 +963,6 @@ apps:
                         galaxy_pro_smtp_username: '{{  galaxy_pro_smtp_username }}'
                         galaxy_pro_smtp_password: '{{  galaxy_pro_smtp_password }}'
             cloudlaunch:
-               rabbitmq:
-                  rabbitmqErlangCookie: {{ random_client_secret }}
                image:
                   repository: galaxyworks/cloudman-ui-pro
                   tag: latest
@@ -1007,6 +1005,10 @@ apps:
                             values:
                             - "true"
                   admin_password: "{{ cluster_password }}"
+                  rabbitmq:
+                    rabbitmqPassword: "{{ random_client_secret }}"
+                    managementPassword: "{{ random_client_secret }}"
+                    rabbitmqErlangCookie: "{{ random_client_secret }}"
                   postgresql:
                      postgresqlPassword: {{ random_client_secret }}
                      postgresqlPostgresPassword: {{ random_client_secret }}
@@ -1237,7 +1239,8 @@ apps:
                            mountPath: /theme
             influxdb:
               setDefaultUser:
-                password: {{ random_client_secret }}
+                user:
+                  password: {{ random_client_secret }}
               persistence:
                 storageClass: ebs
             global:
