@@ -40,22 +40,7 @@ apps:
           securityGroup: cloudlaunch-gpro
         provider_settings:
           ebsOptimised: true
-        vmType: m5.2xlarge
-      config_gvl:
-        config_cloudman:
-          cluster_templates:
-          - filesystem_templates:
-            - name: galaxy
-              roles: galaxyTools,galaxyData
-            - name: galaxyIndices
-              roles: galaxyIndices
-            name: Galaxy
-          - filesystem_templates:
-            - name: galaxy
-              type: transient
-            name: Data
-          masterPostStartScript: |-
-            file:///opt/gvl/scripts/triggers;file:///mnt/galaxy/gvl/poststart.d
+        vmType: m5a.2xlarge
     versions:
     - version: 1.0.0
       frontend_component_path: |-
@@ -922,6 +907,10 @@ apps:
             cluster_type: KUBE_RKE
             rke_registration_server: {{ rke_registration_server }}
             rke_registration_token: {{ rke_registration_token }}
+            # cm_initial_cluster_data contains the helm values template as well, so
+            # Jinja should be prevented from evaluating the variable or an infinite recursion
+            # results. Concating with an empty string prevents Jinja from evaluating cm_initial_cluster_data
+            cm_initial_cluster_data: "{{ ("" + cm_initial_cluster_data)|default('') }}"
 
             helmsman_config:
               repositories:
