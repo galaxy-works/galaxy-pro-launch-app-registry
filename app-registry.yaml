@@ -907,10 +907,7 @@ apps:
             cluster_type: KUBE_RKE
             rke_registration_server: {{ rke_registration_server }}
             rke_registration_token: {{ rke_registration_token }}
-            # cm_initial_cluster_data contains the helm values template as well, so
-            # Jinja should be prevented from evaluating the variable or an infinite recursion
-            # results. Concating with an empty string prevents Jinja from evaluating cm_initial_cluster_data
-            cm_initial_cluster_data: "{{ ("" + cm_initial_cluster_data)|default('') }}"
+            cm_initial_cluster_data: "{{ cm_initial_cluster_data|default('') }}"
 
             helmsman_config:
               repositories:
