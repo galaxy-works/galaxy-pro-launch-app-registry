@@ -907,7 +907,8 @@ apps:
             cluster_type: KUBE_RKE
             rke_registration_server: {{ rke_registration_server }}
             rke_registration_token: {{ rke_registration_token }}
-            cm_initial_cluster_data: "{{ cm_initial_cluster_data|default('') }}"
+            cm_initial_cluster_data: |
+              {{ cm_initial_cluster_data | default('') | to_nice_yaml(indent=2) | indent(width=2) }}
 
             helmsman_config:
               repositories:
@@ -976,7 +977,7 @@ apps:
                     iam.amazonaws.com/role: "{{ cm_deployment_name }}-gxy-pro-cm-node"
                   resources:
                     requests:
-                      cpu: 500m
+                      cpu: 200m
                       memory: 1500Mi
                     limits:
                       cpu: 1000m
