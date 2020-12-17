@@ -172,6 +172,7 @@ install_templates:
         storageClass: efs
       cvmfs:
         enabled: true
+        deploy: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
