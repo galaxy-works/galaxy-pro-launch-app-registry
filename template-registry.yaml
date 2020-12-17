@@ -170,6 +170,8 @@ install_templates:
         tag: 20.09.1
       persistence:
         storageClass: efs
+      cvmfs:
+        enabled: true
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
