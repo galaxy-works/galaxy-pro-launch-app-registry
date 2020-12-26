@@ -193,8 +193,11 @@ install_templates:
           cpu: 3000m
           memory: 7000Mi
       postgresql:
+        enabled: false
         postgresqlPassword: "{{ random_alphanumeric(10) }}"
         postgresqlPostgresPassword: "{{ random_alphanumeric(10) }}"
+        operator:
+          primaryUserPassword: "{{ random_alphanumeric(10) }}"
         persistence:
           storageClass: ebs
         master:
