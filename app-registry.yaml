@@ -916,14 +916,22 @@ apps:
                    url: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
                  - name: rancher
                    url: https://releases.rancher.com/server-charts/stable
+                 - name: zalando
+                   url: https://raw.githubusercontent.com/zalando/postgres-operator/master/charts/postgres-operator/
               template_registries:
                 - name: galaxypro
                   url: https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
               charts:
+                postgres_operator:
+                  name: zalando/postgres-operator
+                  namespace: pgo
+                  create_namespace: true
+                  upgrade: true
                 rancher:
                   name: rancher/rancher
                   namespace: cattle-system
                   create_namespace: true
+                  upgrade: true
                   values:
             {% if (cluster_hostname | ipaddr) %}
                     hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
@@ -944,6 +952,7 @@ apps:
                 initial:
                   charts:
                     galaxy:
+                      upgrade: true
                       install_template: galaxy
                       context:
                         galaxy_pro_smtp_server: '{{  galaxy_pro_smtp_server }}'
