@@ -924,7 +924,7 @@ apps:
               charts:
                 postgres_operator:
                   name: zalando/postgres-operator
-                  namespace: pgo
+                  namespace: postgres-operator
                   create_namespace: true
                   upgrade: true
                 rancher:
