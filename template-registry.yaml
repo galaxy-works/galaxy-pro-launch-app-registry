@@ -167,7 +167,7 @@ install_templates:
     template: |
       image:
         repository: galaxyworks/galaxy-pro
-        tag: 20.09.1
+        tag: 20.09.3
       persistence:
         storageClass: efs
       cvmfs:
