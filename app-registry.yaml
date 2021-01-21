@@ -1113,26 +1113,20 @@ apps:
                        group_wait: 30s
                        repeat_interval: 8h
                        routes:
-                         - match:
-                             alertname: ClusterOverUtilized
-                           receiver: 'scaleup'
-                           group_interval: 2m
-                           group_wait: 30s
-                           repeat_interval: 5m
-                         - match:
-                             alertname: ClusterUnderUtilized
-                           receiver: 'scaledown'
-                           group_interval: 2m
-                           group_wait: 30s
+                         - group_interval: 2m
+                           group_wait: 5s
+                           match:
+                             alertname: ProClusterUnderUtilized
+                           receiver: scaledown
                            repeat_interval: 5m
                          - group_interval: 5m
                            group_wait: 5s
                            match:
-                             alertname: PodNotSchedulable
-                           receiver: 'scaleup'
+                             alertname: ProPodNotSchedulable
+                           receiver: scaleup
                          - match:
                              severity: critical
-                           receiver: 'email'
+                           receiver: email
                grafana:
                   adminPassword: {{ random_client_secret }}
                   affinity:
