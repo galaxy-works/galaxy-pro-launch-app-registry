@@ -557,6 +557,11 @@ install_templates:
                 container:
                   resource_set: 2xlarge
               - tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
+                container:
+                  resource_set: 2xlarge
+                  docker_container_id_override: galaxyworks/rna_starsolo:rev_9
+              - tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
