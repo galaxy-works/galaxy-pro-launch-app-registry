@@ -165,13 +165,6 @@ apps:
                     webHandlers:
                       podAnnotations:
                         backup.velero.io/backup-volumes: galaxy-data
-                    resources:
-                      requests:
-                        cpu: 300m
-                        memory: 2000Mi
-                      limits:
-                        cpu: 3000m
-                        memory: 7000Mi
                     jobs:
                       rules:
                         container_mapper_rules.yml: |
