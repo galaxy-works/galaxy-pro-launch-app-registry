@@ -1116,6 +1116,7 @@ apps:
                            group_wait: 5s
                            match:
                              alertname: ProPodNotSchedulable
+                           repeat_interval: 5m
                            receiver: scaleup
                          - match:
                              severity: critical

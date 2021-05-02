@@ -265,7 +265,7 @@ install_templates:
             oidc_backends_config_file: /galaxy/server/config/oidc_backends_config.xml
             auth_config_file: config/auth_conf.xml
             require_login: true
-            session_duration: 30
+            session_duration: 1440
             smtp_server: {{ context.galaxy_pro_smtp_server }}
             smtp_ssl: true
             smtp_username: {{ context.galaxy_pro_smtp_username }}
