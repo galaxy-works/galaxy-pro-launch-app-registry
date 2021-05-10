@@ -55,6 +55,14 @@ install_templates:
       cvmfs:
         enabled: true
         deploy: false
+        repositories:
+          cvmfs-gxy-cloud: cloud.galaxyproject.org
+        galaxyPersistentVolumeClaims:
+           cloud:
+             storage: 1Gi
+             storageClassName: cvmfs-gxy-cloud
+             mountPath: /cvmfs/cloud.galaxyproject.org
+
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -274,7 +282,7 @@ install_templates:
                   <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4" />
                   <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
                     <param id="k8s_use_service_account">true</param>
-                    <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-data-pvc:{{ '{{' }} .Values.cvmfs.galaxyPersistentVolumeClaims.data.mountPath {{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-main-pvc:{{ '{{' }} .Values.cvmfs.galaxyPersistentVolumeClaims.main.mountPath {{ '}}' }}</param>
+                    <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-data-pvc:{{ '{{' }} .Values.cvmfs.galaxyPersistentVolumeClaims.data.mountPath {{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-main-pvc:{{ '{{' }} .Values.cvmfs.galaxyPersistentVolumeClaims.cloud.mountPath {{ '}}' }}</param>
                     <param id="k8s_namespace">{{ '{{' }} .Release.Namespace {{ '}}' }}</param>
                     <!-- Must be DNS friendly and less than 20 characters -->
                     <param id="k8s_galaxy_instance_id">{{ '{{' }} .Release.Name {{ '}}' }}</param>
