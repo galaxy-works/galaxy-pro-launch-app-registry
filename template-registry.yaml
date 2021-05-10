@@ -52,6 +52,9 @@ install_templates:
         tag: 20.09.3
       persistence:
         storageClass: efs
+      initJob:
+        downloadToolConfs:
+          enabled: false
       cvmfs:
         enabled: true
         deploy: false
