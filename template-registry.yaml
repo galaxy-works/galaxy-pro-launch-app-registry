@@ -57,7 +57,7 @@ install_templates:
           enabled: false
       cvmfs:
         enabled: true
-        deploy: false
+        deploy: true
         repositories:
           cvmfs-gxy-cloud: cloud.galaxyproject.org
         galaxyPersistentVolumeClaims:
