@@ -1022,16 +1022,17 @@ apps:
                          - "{{ cluster_hostname }}"
             {% endif %}
             kubeprometheus:
-               prometheusSpec:
-                  affinity:
-                    nodeAffinity:
-                      requiredDuringSchedulingIgnoredDuringExecution:
-                        nodeSelectorTerms:
-                        - matchExpressions:
-                          - key: node-role.kubernetes.io/master
-                            operator: In
-                            values:
-                            - "true"
+               prometheus:
+                 prometheusSpec:
+                    affinity:
+                      nodeAffinity:
+                        requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                            - key: node-role.kubernetes.io/master
+                              operator: In
+                              values:
+                              - "true"
                prometheusOperator:
                   affinity:
                     nodeAffinity:
@@ -1042,8 +1043,6 @@ apps:
                             operator: In
                             values:
                             - "true"
-               persistence:
-                  storageClass: "efs"
                alertmanager:
                   alertmanagerSpec:
                      affinity:
