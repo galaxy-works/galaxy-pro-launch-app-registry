@@ -27,7 +27,7 @@ install_templates:
                 publicClient: false
                 standardFlowEnabled: true
                 redirectUris:
-                  - 'https://{{context.global.domain}}{{context.project.access_path}}/*'
+                  - 'https://{{context.global.domain}}/*'
 
   galaxy:
     repo: galaxyworks
