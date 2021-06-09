@@ -198,7 +198,7 @@ install_templates:
             allow_user_creation: false
             enable_beta_gdpr: true
             enable_tool_tags: true
-            tool_config_file: "/galaxy/server/config/shed_tool_conf.xml,/galaxy/server/config/tool_conf.xml"
+            tool_config_file: "{{ '{{' }} .Values.initJob.downloadToolConfs.volume.mountPath {{ '}}' }}/config/shed_tool_conf.xml,/galaxy/server/config/tool_conf.xml"
         tool_conf.xml: ""
         integrated_tool_panel.xml: |
           <?xml version="1.0"?>
