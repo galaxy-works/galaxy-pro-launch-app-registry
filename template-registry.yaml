@@ -59,17 +59,20 @@ install_templates:
         storageClass: efs
       initJob:
         downloadToolConfs:
-          enabled: false
+          archives:
+            startup: https://cdn.galaxyworks.io/galaxy/tools/startup.tar.gz
+            running: https://cdn.galaxyworks.io/galaxy/tools/partial.tar.gz
+            full: https://cdn.galaxyworks.io/galaxy/tools/contents.tar.gz
       cvmfs:
         enabled: true
         deploy: false
         repositories:
           cvmfs-gxy-cloud: cloud.galaxyproject.org
         galaxyPersistentVolumeClaims:
-           cloud:
-             storage: 1Gi
-             storageClassName: cvmfs-gxy-cloud
-             mountPath: /cvmfs/cloud.galaxyproject.org
+          cloud:
+            storage: 1Gi
+            storageClassName: cvmfs-gxy-cloud
+            mountPath: /cvmfs/cloud.galaxyproject.org
 
       affinity:
         nodeAffinity:
