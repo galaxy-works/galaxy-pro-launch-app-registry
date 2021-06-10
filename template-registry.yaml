@@ -492,3 +492,46 @@ install_templates:
                     cpu: 4
                     memory: 20G
               default_resource_set: small
+
+  proportal:
+    repo: galaxyworks
+    chart: pro-portal
+    display_name: Pro Portal
+    summary: For internal use only
+    context:
+      oidc_client_id:
+      oidc_client_secret:
+      stripe_public:
+      stripe_secret:
+      stripe_webhook:
+      stripe_price_id:
+      secret_key:
+    template: |
+      configPortal:
+        oidcIssuer: "https://auth.{{context.global.domain}}/auth/realms/gvl"
+        oidcClientId: "{{context.oidc_client_id}}"
+        oidcClientSecret: "{{context.oidc_client_secret}}"
+        stripePublic: "{{context.stripe_public}}"
+        stripeSecret: "{{context.stripe_secret}}"
+        stripeWebhook: "{{context.stripe_webhook}}"
+        stripePriceId: "{{context.stripe_price_id}}"
+        secretKey: "{{context.secret_key}}"
+
+      ingress:
+        enabled: true
+        annotations:
+           kubernetes.io/tls-acme: "true"
+           cert-manager.io/cluster-issuer: letsencrypt-prod
+           nginx.ingress.kubernetes.io/secure-backends: "true"
+        hosts:
+          - host: ~
+            paths:
+              - "/"
+          - host: "portal.galaxyworks.io"
+            paths:
+              - "/"
+        tls:
+           - secretName: "portal-galaxyworks-io-key"
+             hosts:
+               - "portal.galaxyworks.io"
+        access_path: "https://portal.galaxyworks.io/"
