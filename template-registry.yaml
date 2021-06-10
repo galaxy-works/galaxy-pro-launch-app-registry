@@ -66,13 +66,6 @@ install_templates:
       cvmfs:
         enabled: true
         deploy: false
-        repositories:
-          cvmfs-gxy-cloud: cloud.galaxyproject.org
-        galaxyPersistentVolumeClaims:
-          cloud:
-            storage: 1Gi
-            storageClassName: cvmfs-gxy-cloud
-            mountPath: /cvmfs/cloud.galaxyproject.org
 
       affinity:
         nodeAffinity:
