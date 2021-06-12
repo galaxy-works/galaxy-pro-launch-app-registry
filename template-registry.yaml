@@ -502,6 +502,7 @@ install_templates:
       stripe_webhook:
       stripe_price_id:
       secret_key:
+      db_password:
     template: |
       configPortal:
         oidcIssuer: "https://auth.{{context.global.domain}}/auth/realms/gvl"
@@ -512,6 +513,11 @@ install_templates:
         stripeWebhook: "{{context.stripe_webhook}}"
         stripePriceId: "{{context.stripe_price_id}}"
         secretKey: "{{context.secret_key}}"
+
+      postgresql:
+        dbPassword: "{{context.db_password}}"
+        persistence:
+            size: 10Gi
 
       ingress:
         enabled: true
