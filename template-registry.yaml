@@ -93,6 +93,14 @@ install_templates:
         postgresqlPostgresPassword: "{{ random_alphanumeric(10) }}"
         operator:
           primaryUserPassword: "{{ random_alphanumeric(10) }}"
+          operatorSpecExtra:
+            resources:
+              requests:
+                cpu: 500m
+                memory: 100Mi
+              limits:
+                cpu: "4"
+                memory: 10000Mi
         persistence:
           storageClass: ebs
         master:
