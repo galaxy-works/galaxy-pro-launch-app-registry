@@ -515,6 +515,35 @@ apps:
                                   </div>
                               </body>
                           </html>
+                      /galaxy/server/lib/galaxy/jobs/rules/destinations.py:
+                        useSecret: false
+                        applyToJob: true
+                        applyToWeb: true
+                        content: |
+                          import requests
+                          from galaxy.jobs import JobDestination
+                          from galaxy.jobs.mapper import JobMappingException
+
+                          PORTAL_LOCATION = 'https://portal.galaxyworks.io'
+                          ##  Is there a more appropriate internal address to map here?
+                          PORTAL_HANDSHAKE = '{{ random_client_secret }}'
+                          QUOTA_REQ = f"{PORTAL_LOCATION}/api/v1/userqueue/"
+
+                          def destination_for_user(job, user_email):
+                              try:
+                                  # example req:
+                                  # 192.168.0.101:8000/api/v1/userqueue/?handshake=THEDEFAULTISNOTSECURE&user=dannon.baker@gmail.com
+                                  data = requests.get(QUOTA_REQ, params={'handshake': PORTAL_HANDSHAKE, 'user': user_email}).json()
+                                  destination = data.get('destination')
+                              except Exception:
+                                  # if something goes wrong with the inter-infra communication, just
+                                  # throw it in the static queue to avoid user impact.
+                                  # TODO: revisit this?  Do we just bail and say rerun instead?
+                                  destination = 'static'
+                              if destination == 'invalid':
+                                  raise JobMappingException("You must have an active subscription to run jobs.")
+                              else:
+                                  return JobDestination(id="destination")
                     persistence:
                       storageClass: efs
                       size: 1100Gi
