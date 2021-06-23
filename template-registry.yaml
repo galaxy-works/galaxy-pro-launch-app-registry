@@ -200,7 +200,113 @@ install_templates:
             enable_beta_gdpr: true
             enable_tool_tags: true
             tool_config_file: "{{ '{{' }} .Values.initJob.downloadToolConfs.volume.mountPath {{ '}}' }}/config/shed_tool_conf.xml,/galaxy/server/config/tool_conf.xml"
-        tool_conf.xml: ""
+        tool_conf.xml: |
+          <?xml version="1.0"?>
+          <toolbox>
+              <section id="get_data" name="Get Data" version="">
+                  <tool file="data_source/upload.xml" />
+                  <tool file="data_source/ucsc_tablebrowser.xml" />
+              </section>
+              <section id="send_data" name="Send Data" version="">
+                  <tool file="advaita_API/advaita_send_DE_data.xml" />
+                  <tool file="advaita_API/advaita_send_VCF_data.xml" />
+              </section>
+              <section id="collection_operations" name="Collection Operations" version="">
+                  <tool file="${model_tools_path}/unzip_collection.xml" />
+                  <tool file="${model_tools_path}/zip_collection.xml" />
+                  <tool file="${model_tools_path}/filter_failed_collection.xml" />
+                  <tool file="${model_tools_path}/filter_empty_collection.xml" />
+                  <tool file="${model_tools_path}/flatten_collection.xml" />
+                  <tool file="${model_tools_path}/merge_collection.xml" />
+                  <tool file="${model_tools_path}/relabel_from_file.xml" />
+                  <tool file="${model_tools_path}/filter_from_file.xml" />
+                  <tool file="${model_tools_path}/sort_collection_list.xml" />
+                  <tool file="${model_tools_path}/tag_collection_from_file.xml" />
+                  <tool file="${model_tools_path}/apply_rules.xml" />
+                  <tool file="${model_tools_path}/build_list.xml" />
+                  <tool file="${model_tools_path}/extract_dataset.xml" />
+              </section>
+              <section id="expression_tools" name="Expression Tools">
+                  <tool file="expression_tools/parse_values_from_file.xml" />
+              </section>
+              <label id="general_text_label" text="General Text Tools" version="" />
+              <section id="text_manipulation" name="Text Manipulation" version="">
+                  <tool file="filters/fixedValueColumn.xml" />
+                  <tool file="filters/catWrapper.xml" />
+                  <tool file="filters/condense_characters.xml" />
+                  <tool file="filters/convert_characters.xml" />
+                  <tool file="filters/mergeCols.xml" />
+                  <tool file="filters/CreateInterval.xml" />
+                  <tool file="filters/cutWrapper.xml" />
+                  <tool file="filters/changeCase.xml" />
+                  <tool file="filters/pasteWrapper.xml" />
+                  <tool file="filters/remove_beginning.xml" />
+                  <tool file="filters/randomlines.xml" />
+                  <tool file="filters/headWrapper.xml" />
+                  <tool file="filters/tailWrapper.xml" />
+                  <tool file="filters/trimmer.xml" />
+                  <tool file="filters/wc_gnu.xml" />
+                  <tool file="filters/secure_hash_message_digest.xml" />
+              </section>
+              <section id="filter_and_sort" name="Filter and Sort" version="">
+                  <tool file="stats/filtering.xml" />
+                  <tool file="filters/sorter.xml" />
+                  <tool file="filters/grep.xml" />
+                  <label id="gff" text="GFF" />
+                  <tool file="filters/gff/extract_GFF_Features.xml" />
+                  <tool file="filters/gff/gff_filter_by_attribute.xml" />
+                  <tool file="filters/gff/gff_filter_by_feature_count.xml" />
+                  <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />
+                  <tool file="migrate_index_read/migrate_index_read.xml" />
+              </section>
+              <section id="join_subtract_and_group" name="Join, Subtract and Group" version="">
+                  <tool file="filters/joiner.xml" />
+                  <tool file="filters/compare.xml" />
+                  <tool file="stats/grouping.xml" />
+              </section>
+              <section id="convert_formats" name="Convert Formats" version="">
+                  <tool file="filters/bed2gff.xml" />
+                  <tool file="filters/gff2bed.xml" />
+                  <tool file="maf/maf_to_bed.xml" />
+                  <tool file="maf/maf_to_interval.xml" />
+                  <tool file="maf/maf_to_fasta.xml" />
+                  <tool file="filters/sff_extractor.xml" />
+                  <tool file="filters/wig_to_bigwig.xml" />
+                  <tool file="filters/bed_to_bigbed.xml" />
+              </section>
+              <section id="nanopore" name="Nanopore" version="">
+                  <tool file="bonito/bonito_basecaller.xml" />
+              </section>
+              <label id="common_genomics_tools_label" text="Common Genomics Tools" version="" />
+              <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals" version="">
+                  <tool file="filters/wiggle_to_simple.xml" />
+                  <tool file="stats/aggregate_binned_scores_in_intervals.xml" />
+                  <tool file="filters/ucsc_gene_bed_to_exon_bed.xml" />
+              </section>
+              <section id="fetch_sequences_alignments" name="Fetch Sequences/Alignments" version="">
+                  <tool file="extract/extract_genomic_dna.xml" />
+                  <tool file="maf/interval2maf_pairwise.xml" />
+                  <tool file="maf/interval2maf.xml" />
+                  <tool file="maf/interval_maf_to_merged_fasta.xml" />
+                  <tool file="maf/genebed_maf_to_fasta.xml" />
+                  <tool file="maf/maf_stats.xml" />
+                  <tool file="maf/maf_thread_for_species.xml" />
+                  <tool file="maf/maf_limit_to_species.xml" />
+                  <tool file="maf/maf_limit_size.xml" />
+                  <tool file="maf/maf_by_block_number.xml" />
+                  <tool file="maf/maf_reverse_complement.xml" />
+                  <tool file="maf/maf_filter.xml" />
+              </section>
+              <section id="statistics" name="Statistics" version="">
+                  <tool file="stats/gsummary.xml" />
+                  <tool file="filters/uniq.xml" />
+              </section>
+              <section id="graph_display_data" name="Graph/Display Data" version="">
+                  <tool file="plotting/boxplot.xml" hidden="true"/>
+                  <tool file="maf/vcf_to_maf_customtrack.xml" />
+                  <tool file="pygenometracks/pyGenomeTracks.xml" />
+              </section>
+          </toolbox>
         integrated_tool_panel.xml: |
           <?xml version="1.0"?>
           <toolbox>
