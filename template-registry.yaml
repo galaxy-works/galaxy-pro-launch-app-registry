@@ -633,6 +633,12 @@ install_templates:
         persistence:
             size: 10Gi
 
+      galaxy:
+        postgresql:
+          dbClusterName: "galaxy-galaxy-galaxy-postgres"
+          existingSecretName: "galaxydbuser.galaxy-galaxy-galaxy-postgres.credentials.postgresql.acid.zalan.do"
+          existingSecretKey: "password"
+
       ingress:
         enabled: true
         annotations:
