@@ -101,6 +101,15 @@ install_templates:
               limits:
                 cpu: "4"
                 memory: 10000Mi
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                    - "true"
+
         persistence:
           storageClass: ebs
         master:
@@ -631,7 +640,17 @@ install_templates:
       postgresql:
         dbPassword: "{{context.db_password}}"
         persistence:
-            size: 10Gi
+          size: 10Gi
+        operator:
+          operatorSpecExtra:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                    - "true"
 
       galaxy:
         postgresql:
