@@ -628,6 +628,9 @@ install_templates:
       db_password:
       galaxy_handshake:
     template: |
+      image:
+        pullPolicy: Always
+
       configPortal:
         oidcIssuer: "https://auth.{{context.global.domain}}/auth/realms/gvl"
         oidcClientId: "{{context.oidc_client_id}}"
