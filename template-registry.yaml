@@ -626,6 +626,7 @@ install_templates:
       stripe_price_id:
       secret_key:
       db_password:
+      galaxy_handshake:
     template: |
       configPortal:
         oidcIssuer: "https://auth.{{context.global.domain}}/auth/realms/gvl"
@@ -636,6 +637,7 @@ install_templates:
         stripeWebhook: "{{context.stripe_webhook}}"
         stripePriceId: "{{context.stripe_price_id}}"
         secretKey: "{{context.secret_key}}"
+        galaxyHandshake: "{{context.galaxy_handshake}}"
 
       postgresql:
         dbPassword: "{{context.db_password}}"
