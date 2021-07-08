@@ -314,6 +314,7 @@ install_templates:
                   <tool file="plotting/boxplot.xml" hidden="true"/>
                   <tool file="maf/vcf_to_maf_customtrack.xml" />
                   <tool file="pygenometracks/pyGenomeTracks.xml" />
+                  <tool file="frequency_reference_per_base/frequency_reference_per_base.xml" />
               </section>
           </toolbox>
         integrated_tool_panel.xml: |
