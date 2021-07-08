@@ -480,46 +480,81 @@ install_templates:
         rules:
           container_mapper_rules.yml: |
             mappings:
-              - tool_ids:
+              make_families:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/nick/dunovo/make_families/.*
+                docker_container_id_override: galaxyworks/make_families:2.15
+                resource_set: 1c2m
+              align_families:
+                  tool_ids:
+                    - toolshed.g2.bx.psu.edu/repos/nick/dunovo/align_families/.*
+                    - toolshed.g2.bx.psu.edu/repos/nick/dunovo/dunovo/.*
+                  docker_container_id_override: quay.io/biocontainers/dunovo:2.15--py27h3dcb392_3
+                  resource_set: 1c2m
+              barcode:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/nick/dunovo/correct_barcodes/.*
+                docker_container_id_override: galaxyworks/correct_barcodes:2.15
+                resource_set: 1c2m
+              summary_stats
+                tool_ids:
                   - Summary_Statistics1
-                container:
-                  docker_container_id_override: galaxyworks/gsummary:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/gsummary:1.0.0
+                resource_set: 1c2m
+              frequency_reference_per_base:
+                tool_ids:
+                  - frequency_reference_per_base
+                docker_container_id_override: galaxyworks/frequency_reference_per_base:1.2
+                resource_set: 1c2m
+              guppy:
+                tool_ids:
+                  - guppy
+                docker_container_id_override: gwks/guppy:4.2.2
+                resource_set: 1c2m
+              bonito:
+                tool_ids:
+                  - bonito_basecaller
+                docker_container_id_override: galaxyworks/samtools-bonito:0.3.0
+                resource_set: 3c14m
+              sam_fasta_index_builder:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_sam_fasta_index_builder/sam_fasta_index_builder/.*
-                container:
-                  docker_container_id_override: galaxyworks/sam-fasta-dm:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/sam-fasta-dm:1.0.0
+                resource_set: 1c2m
+              bwa_mem_index_builder_data_manager:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_bwa_mem_index_builder/bwa_mem_index_builder_data_manager/.*
-                container:
-                  docker_container_id_override: galaxyworks/bwa-dm:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/bwa-dm:1.0.0
+                resource_set: 1c2m
+              pygenomeTracks:
+                tool_ids:
                   - pyGenomeTracks
                   - toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/*
-                container:
-                  docker_container_id_override: galaxyworks/pygenometracks:latest
-                  resource_set: small
-              - tool_ids:
+                  - visualize_coverage
+                docker_container_id_override: galaxyworks/pygenometracks:latest
+                resource_set: 1c2m
+              galaxy_container_tools:
+                tool_ids:
                   - sort1
                   - Grouping1
-                container:
-                  docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
-                  resource_set: small
-              - tool_ids:
+                  - report_generation
+                  - migrate_index_read
+                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                resource_set: 1c2m
+              param_value_from_file:
+                tool_ids:
                   - param_value_from_file
-                container:
-                  docker_container_id_override: cloudve/param_value_from_file:latest
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: cloudve/param_value_from_file:latest
+                resource_set: 1c2m
+              customviztools:
+                tool_ids:
                   - read_mapping_viz
                   - snp_substitution_viz
                   - variant_summary_viz
-                container:
-                  docker_container_id_override: galaxyworks/customviztools:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/customviztools:1.0.0
+                resource_set: 1c2m
+              2c4m:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/bwameth/bwameth/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/.*
@@ -528,9 +563,9 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/iuc/varscan_somatic/varscan_somatic/.*
                   - toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
-                container:
-                  resource_set: medium
-              - tool_ids:
+                resource_set: 2c4m
+              3c7m:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
                   - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*
@@ -546,72 +581,86 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
-                container:
-                  resource_set: large
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
-                  - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
-                container:
-                  resource_set: 2xlarge
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
-                container:
-                  resource_set: 2xlarge
-                  docker_container_id_override: galaxyworks/rna_starsolo:rev_9
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/nanoplot/nanoplot/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/.*
+                resource_set: 3c7m
+              porechop:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/.*
+                resource_set: 3c14m
+              12c20m:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
+                  - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
+                resource_set: 12c20m
+              7c15m:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_image/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
-                container:
-                  resource_set: mlarge
-              - tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                resource_set: 7c15m
+              rna_starsolo:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
+                resource_set: 2xlarge
+                docker_container_id_override: galaxyworks/rna_starsolo:rev_9
+              advaita:
+                tool_ids:
                   - advaita_send_DE_data
                   - advaita_send_VCF_data
-                container:
-                  docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
             resources:
               resource_sets:
-                small:
+                1c2m:
                   requests:
-                    cpu: 1
-                    memory: 2G
+                      cpu: 1
+                      memory: 2G
                   limits:
-                    cpu: 2
-                    memory: 5G
-                medium:
+                      cpu: 2
+                      memory: 4G
+                2c4m:
                   requests:
-                    cpu: 2
-                    memory: 4G
+                      cpu: 2
+                      memory: 4G
                   limits:
-                    cpu: 4
-                    memory: 10G
-                large:
+                      cpu: 3
+                      memory: 7G
+                3c7m:
                   requests:
-                    cpu: 4
-                    memory: 8G
+                      cpu: 3
+                      memory: 7G
                   limits:
-                    cpu: 8
-                    memory: 16G
-                2xlarge:
+                      cpu: 4
+                      memory: 15G
+                3c14m:
                   requests:
-                    cpu: 12
-                    memory: 20G
+                      cpu: 3
+                      memory: 14G
                   limits:
-                    cpu: 12
-                    memory: 24G
-                mlarge:
+                      cpu: 4
+                      memory: 15G
+                12c20m:
                   requests:
-                    cpu: 2
-                    memory: 16G
+                      cpu: 12
+                      memory: 20G
                   limits:
-                    cpu: 4
-                    memory: 20G
-              default_resource_set: small
+                      cpu: 12
+                      memory: 24G
+                7c15m:
+                  requests:
+                      cpu: 7
+                      memory: 15G
+                  limits:
+                      cpu: 8
+                      memory: 20G
+              default_resource_set: 1c2m
 
   proportal:
     repo: galaxyworks
