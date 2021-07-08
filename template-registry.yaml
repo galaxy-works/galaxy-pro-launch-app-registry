@@ -496,7 +496,7 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/nick/dunovo/correct_barcodes/.*
                 docker_container_id_override: galaxyworks/correct_barcodes:2.15
                 resource_set: 1c2m
-              summary_stats
+              summary_stats:
                 tool_ids:
                   - Summary_Statistics1
                 docker_container_id_override: galaxyworks/gsummary:1.0.0
