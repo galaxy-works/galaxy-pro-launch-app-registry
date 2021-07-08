@@ -205,6 +205,7 @@ install_templates:
             search_url: https://galaxyworks.io/
             terms_url: https://galaxyworks.io/
             qa_url: https://galaxyworks.io/
+            quota_url: null
             allow_user_creation: false
             enable_beta_gdpr: true
             enable_tool_tags: true
