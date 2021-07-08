@@ -504,7 +504,7 @@ install_templates:
               frequency_reference_per_base:
                 tool_ids:
                   - frequency_reference_per_base
-                docker_container_id_override: galaxyworks/frequency_reference_per_base:1.2
+                docker_container_id_override: galaxyworks/frequency_reference_per_base:1.3
                 resource_set: 1c2m
               guppy:
                 tool_ids:
@@ -579,7 +579,7 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline/medaka_variant_pipeline/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/nanoplot/nanoplot/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/.*
