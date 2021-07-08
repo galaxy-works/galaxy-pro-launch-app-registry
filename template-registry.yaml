@@ -555,19 +555,16 @@ install_templates:
                 resource_set: 1c2m
               2c4m:
                 tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/bwameth/bwameth/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/hisat2/hisat2/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/valet/valet/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/varscan_somatic/varscan_somatic/.*
                   - toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
                 resource_set: 2c4m
               3c7m:
                 tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
-                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_pe_fragmentsize/deeptools_bam_pe_fragmentsize/.*
@@ -578,17 +575,17 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bigwig_summary/deeptools_multi_bigwig_summary/.*
                   - toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/nanoplot/nanoplot/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
-                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/.*
-                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/nanoplot/nanoplot/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/.*
                 resource_set: 3c7m
               porechop:
                 tool_ids:
@@ -606,10 +603,16 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
                 resource_set: 7c15m
+              31c124m:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
+                resource_set: 31c124m
               rna_starsolo:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
-                resource_set: 2xlarge
+                resource_set: 12c20m
                 docker_container_id_override: galaxyworks/rna_starsolo:rev_9
               advaita:
                 tool_ids:
@@ -646,13 +649,6 @@ install_templates:
                   limits:
                       cpu: 4
                       memory: 15G
-                12c20m:
-                  requests:
-                      cpu: 12
-                      memory: 20G
-                  limits:
-                      cpu: 12
-                      memory: 24G
                 7c15m:
                   requests:
                       cpu: 7
@@ -660,6 +656,20 @@ install_templates:
                   limits:
                       cpu: 8
                       memory: 20G
+                12c20m:
+                  requests:
+                      cpu: 12
+                      memory: 20G
+                  limits:
+                      cpu: 12
+                      memory: 24G
+                31c124m:
+                  requests:
+                      cpu: 31
+                      memory: 124G
+                  limits:
+                      cpu: 31
+                      memory: 124G
               default_resource_set: 1c2m
 
   proportal:
