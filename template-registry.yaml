@@ -339,6 +339,10 @@ install_templates:
                   <tool file="frequency_reference_per_base/frequency_reference_per_base.xml" />
               </section>
           </toolbox>
+        instance_tool_conf.xml: |
+          <?xml version="1.0"?>
+          <toolbox>
+          </toolbox>
         integrated_tool_panel.xml: |
           <?xml version="1.0"?>
           <toolbox>
