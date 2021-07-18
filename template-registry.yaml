@@ -124,6 +124,27 @@ install_templates:
                     operator: In
                     values:
                     - "true"
+      extraInitContainers:
+        - name: tool-provider
+          applyToJob: true
+          image: galaxyworks/protools:latest
+          command:
+            - sh
+          args:
+            - -c
+            - |
+              echo "Copying pro tools..."
+              cp -R /protools/* /protools
+              echo "done."
+          volumeMounts:
+            - name: protools
+              mountPath: /protools
+      extraVolumes:
+        - name: protools
+          emptyDir: {}
+      extraVolumeMounts:
+        - name: protools
+          mountPath: /galaxy/server/protools
       influxdb:
         enabled: true
         url: "{{context.global.influxdb_url}}"
