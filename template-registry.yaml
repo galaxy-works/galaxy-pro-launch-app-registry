@@ -125,8 +125,10 @@ install_templates:
                     values:
                     - "true"
       extraInitContainers:
-        - name: tool-provider
+        - name: galaxy-pro-tools
           applyToJob: true
+          applyToWeb: true
+          applyToWorkflow: true
           image: galaxyworks/protools:latest
           command:
             - sh
@@ -134,11 +136,11 @@ install_templates:
             - -c
             - |
               echo "Copying pro tools..."
-              cp -R /protools/* /protools
+              cp -R /protools/* /target
               echo "done."
           volumeMounts:
             - name: protools
-              mountPath: /protools
+              mountPath: /target
       extraVolumes:
         - name: protools
           emptyDir: {}
