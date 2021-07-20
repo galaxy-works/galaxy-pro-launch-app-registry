@@ -140,17 +140,11 @@ install_templates:
             - -c
             - |
               echo "Copying pro tools..."
-              cp -R /protools/* /target
+              cp -R /protools/* /galaxy/server/database/tools
               echo "done."
           volumeMounts:
-            - name: protools
-              mountPath: /target
-      extraVolumes:
-        - name: protools
-          emptyDir: {}
-      extraVolumeMounts:
-        - name: protools
-          mountPath: /galaxy/server/protools
+            - name: galaxy-data
+              mountPath: /galaxy/server/database
       influxdb:
         enabled: true
         url: "{{context.global.influxdb_url}}"
