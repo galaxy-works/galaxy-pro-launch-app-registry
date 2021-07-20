@@ -94,9 +94,13 @@ install_templates:
         operator:
           primaryUserPassword: "{{ random_alphanumeric(10) }}"
           operatorSpecExtra:
+            patroni:
+              loop_wait: 30
+              retry_timeout: 120
+              ttl: 180
             resources:
               requests:
-                cpu: 500m
+                cpu: 250m
                 memory: 100Mi
               limits:
                 cpu: "4"
