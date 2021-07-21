@@ -335,14 +335,7 @@ install_templates:
               <section id="graph_display_data" name="Graph/Display Data" version="">
                   <tool file="plotting/boxplot.xml" hidden="true"/>
                   <tool file="maf/vcf_to_maf_customtrack.xml" />
-                  <tool file="pygenometracks/pyGenomeTracks_custom.xml" guid="toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.6">
-                      <tool_shed>toolshed.g2.bx.psu.edu</tool_shed>
-                      <repository_name>pygenometracks</repository_name>
-                      <repository_owner>iuc</repository_owner>
-                      <installed_changeset_revision>2824d77cd8f8</installed_changeset_revision>
-                      <id>toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/3.6</id>
-                      <version>3.6</version>
-                  </tool>
+                  <tool file="pygenometracks/pyGenomeTracks_custom.xml" />
                   <tool file="frequency_reference_per_base/frequency_reference_per_base.xml" />
               </section>
           </toolbox>
