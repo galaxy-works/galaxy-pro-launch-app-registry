@@ -230,7 +230,7 @@ install_templates:
             allow_user_creation: false
             enable_beta_gdpr: true
             enable_tool_tags: true
-            tool_config_file: "{{ '{{' }} .Values.initJob.downloadToolConfs.volume.mountPath {{ '}}' }}/config/shed_tool_conf.xml,/galaxy/server/config/pro_tool_conf.xml,/galaxy/server/config/instance_tool_conf.xml"
+            tool_config_file: "/galaxy/server/config/instance_tool_conf.xml,/galaxy/server/config/pro_tool_conf.xml,{{ '{{' }} .Values.initJob.downloadToolConfs.volume.mountPath {{ '}}' }}/config/shed_tool_conf.xml"
         pro_tool_conf.xml: |
           <?xml version="1.0"?>
           <toolbox>
