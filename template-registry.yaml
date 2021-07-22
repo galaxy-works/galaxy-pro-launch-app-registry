@@ -645,6 +645,10 @@ install_templates:
                   - advaita_send_DE_data
                   - advaita_send_VCF_data
                 docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+              bam_converters:
+                tools_ids:
+                  - CONVERTER_bam_to_bigwig_0
+                docker_container_id_override: quay.io/biocontainers/mulled-v2-1c6be8ad49e4dfe8ab70558e8fb200d7b2fd7509:5900b4e68c4051137fffd99165b00e98f810acae-0
             resources:
               resource_sets:
                 1c2m:
