@@ -565,7 +565,7 @@ install_templates:
                   - Grouping1
                   - report_generation
                   - migrate_index_read
-                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                docker_container_id_override: "{{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}"
                 resource_set: 1c2m
               param_value_from_file:
                 tool_ids:
@@ -644,7 +644,7 @@ install_templates:
                 tool_ids:
                   - advaita_send_DE_data
                   - advaita_send_VCF_data
-                docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                docker_container_id_override: "{{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}"
               bam_converters:
                 tool_ids:
                   - CONVERTER_bam_to_bigwig_0
