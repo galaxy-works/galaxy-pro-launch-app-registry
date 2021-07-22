@@ -504,7 +504,7 @@ install_templates:
             </html>
       jobs:
         rules:
-          container_mapper_rules.yml:
+          container_mapper_rules.yml: |
             mappings:
               make_families:
                 tool_ids:
