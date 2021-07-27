@@ -79,6 +79,8 @@ install_templates:
       webHandlers:
         podAnnotations:
           backup.velero.io/backup-volumes: galaxy-data
+      metrics:
+        enabled: true
       resources:
         requests:
           cpu: 150m
