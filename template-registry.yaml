@@ -458,7 +458,7 @@ install_templates:
                         - "true"
           limits:
           - type: registered_user_concurrent_jobs
-            value: 10
+            value: 30
           - type: anonymous_user_concurrent_jobs
             value: 0
       extraFileMappings:
