@@ -721,6 +721,7 @@ install_templates:
     context:
       oidc_client_id:
       oidc_client_secret:
+      stripe_live_mode:
       stripe_public:
       stripe_secret:
       stripe_webhook:
@@ -736,6 +737,7 @@ install_templates:
         oidcIssuer: "https://auth.{{context.global.domain}}/auth/realms/gvl"
         oidcClientId: "{{context.oidc_client_id}}"
         oidcClientSecret: "{{context.oidc_client_secret}}"
+        stripeLiveMode: "{{context.stripe_live_mode}}"
         stripePublic: "{{context.stripe_public}}"
         stripeSecret: "{{context.stripe_secret}}"
         stripeWebhook: "{{context.stripe_webhook}}"
