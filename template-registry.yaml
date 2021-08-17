@@ -457,6 +457,10 @@ install_templates:
                         operator: NotIn
                         values:
                         - "true"
+          execution:
+            environments:
+              dynamic_k8s_dispatcher:
+                tmp_dir: true
           limits:
           - type: registered_user_concurrent_jobs
             value: 30
