@@ -460,7 +460,7 @@ install_templates:
           execution:
             environments:
               dynamic_k8s_dispatcher:
-                tmp_dir: true
+                tmp_dir: "true"
           limits:
           - type: registered_user_concurrent_jobs
             value: 30
