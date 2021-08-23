@@ -909,7 +909,7 @@ apps:
                  - name: galaxyworks
                    url: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
                  - name: zalando
-                   url: https://raw.githubusercontent.com/zalando/postgres-operator/master/charts/postgres-operator/
+                   url: https://raw.githubusercontent.com/zalando/postgres-operator/v1.6.3/charts/postgres-operator/
               template_registries:
                 - name: galaxypro
                   url: https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
