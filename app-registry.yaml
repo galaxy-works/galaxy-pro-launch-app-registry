@@ -895,6 +895,7 @@ apps:
             securityGroup: cloudlaunch-cm2
           vmType: m1.medium
         config_cloudman2:
+          cm_keycloak_operator_fork: "cloudve/keycloak-operator"
           cm_charts_repo: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
           cm_helm_values: |
             cluster_type: KUBE_RKE
@@ -907,10 +908,8 @@ apps:
               repositories:
                  - name: galaxyworks
                    url: https://raw.githubusercontent.com/galaxy-works/helm-charts/master/
-                 - name: rancher
-                   url: https://releases.rancher.com/server-charts/stable
                  - name: zalando
-                   url: https://raw.githubusercontent.com/zalando/postgres-operator/master/charts/postgres-operator/
+                   url: https://raw.githubusercontent.com/zalando/postgres-operator/v1.6.3/charts/postgres-operator/
               template_registries:
                 - name: galaxypro
                   url: https://raw.githubusercontent.com/galaxy-works/galaxy-pro-launch-app-registry/master/template-registry.yaml
@@ -920,25 +919,6 @@ apps:
                   namespace: postgres-operator
                   create_namespace: true
                   upgrade: true
-                rancher:
-                  name: rancher/rancher
-                  namespace: cattle-system
-                  create_namespace: true
-                  upgrade: true
-                  values:
-            {% if (cluster_hostname | ipaddr) %}
-                    hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
-            {% else %}
-                    hostname: rancher.{{ cluster_hostname }}
-            {% endif %}
-                    ingress:
-                      tls:
-                        source: letsEncrypt
-                    letsEncrypt:
-                      email: "admin@{{ cluster_hostname }}"
-                      environment: "production"
-                      ingress:
-                        class: nginx
 
             projman_config:
               projects:
@@ -1041,17 +1021,18 @@ apps:
                        hosts:
                          - "{{ cluster_hostname }}"
             {% endif %}
-            prometheus:
-               prometheusSpec:
-                  affinity:
-                    nodeAffinity:
-                      requiredDuringSchedulingIgnoredDuringExecution:
-                        nodeSelectorTerms:
-                        - matchExpressions:
-                          - key: node-role.kubernetes.io/master
-                            operator: In
-                            values:
-                            - "true"
+            kubeprometheus:
+               prometheus:
+                 prometheusSpec:
+                    affinity:
+                      nodeAffinity:
+                        requiredDuringSchedulingIgnoredDuringExecution:
+                          nodeSelectorTerms:
+                          - matchExpressions:
+                            - key: node-role.kubernetes.io/master
+                              operator: In
+                              values:
+                              - "true"
                prometheusOperator:
                   affinity:
                     nodeAffinity:
@@ -1062,8 +1043,6 @@ apps:
                             operator: In
                             values:
                             - "true"
-               persistence:
-                  storageClass: "efs"
                alertmanager:
                   alertmanagerSpec:
                      affinity:
@@ -1136,9 +1115,9 @@ apps:
                      server:
                         root_url: "https://{{ cluster_hostname }}/grafana"
                      auth.generic_oauth:
-                        auth_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/auth"
-                        token_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/token"
-                        api_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/userinfo"
+                        auth_url: "https://{{ keycloak_hostname }}/auth/realms/{{ cm_keycloak_realm_name }}/protocol/openid-connect/auth"
+                        token_url: "https://{{ keycloak_hostname }}/auth/realms/{{ cm_keycloak_realm_name }}/protocol/openid-connect/token"
+                        api_url: "https://{{ keycloak_hostname }}/auth/realms/{{ cm_keycloak_realm_name }}/protocol/openid-connect/userinfo"
                   ingress:
                      annotations:
                         kubernetes.io/tls-acme: "true"
@@ -1153,79 +1132,6 @@ apps:
                           hosts:
                             - "{{ cluster_hostname }}"
             {% endif %}
-            keycloak:
-               keycloak:
-                   resources:
-                     requests:
-                        cpu: 100m
-                        memory: 750Mi
-                     limits:
-                        cpu: 1000m
-                        memory: 2000Mi
-                   affinity: |
-                     podAntiAffinity:
-                       requiredDuringSchedulingIgnoredDuringExecution:
-                         - labelSelector:
-                             matchLabels:
-                               {{ '{{' }}- include "keycloak.selectorLabels" . | nindent 10 {{ '}}' }}
-                             matchExpressions:
-                               - key: role
-                                 operator: NotIn
-                                 values:
-                                   - test
-                           topologyKey: kubernetes.io/hostname
-                       preferredDuringSchedulingIgnoredDuringExecution:
-                         - weight: 100
-                           podAffinityTerm:
-                             labelSelector:
-                               matchLabels:
-                                 {{ '{{' }}- include "keycloak.selectorLabels" . | nindent 12 {{ '}}' }}
-                               matchExpressions:
-                                 - key: role
-                                   operator: NotIn
-                                   values:
-                                     - test
-                             topologyKey: failure-domain.beta.kubernetes.io/zone
-                     nodeAffinity:
-                       requiredDuringSchedulingIgnoredDuringExecution:
-                         nodeSelectorTerms:
-                         - matchExpressions:
-                           - key: node-role.kubernetes.io/master
-                             operator: In
-                             values:
-                             - "true"
-                   password: "{{ cluster_password }}"
-                   ingress:
-                     enabled: true
-                     path: /auth
-                     annotations:
-                        kubernetes.io/tls-acme: "true"
-                        cert-manager.io/cluster-issuer: letsencrypt-prod
-                        nginx.ingress.kubernetes.io/secure-backends: "true"
-                     hosts:
-                        - ~
-            {% if not (cluster_hostname | ipaddr) %}
-                        - "{{ cluster_hostname }}"
-                     tls:
-                        - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
-                          hosts:
-                            - "{{ cluster_hostname }}"
-            {% endif %}
-                   extraInitContainers: |
-                     - name: theme-provider
-                       image: galaxyworks/galaxy-pro-keycloak-theme:1.0.0
-                       imagePullPolicy: IfNotPresent
-                       command:
-                         - sh
-                       args:
-                         - -c
-                         - |
-                           echo "Copying theme..."
-                           cp -R /customtheme/* /theme
-                           echo "done."
-                       volumeMounts:
-                         - name: theme
-                           mountPath: /theme
             influxdb:
               setDefaultUser:
                 user:

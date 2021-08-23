@@ -6,141 +6,28 @@ install_templates:
     summary: For internal use only
     template: |
       projectName: "{{context.project.namespace}}"
-      secrets:
-        oidc-client-id: "projman-{{context.project.namespace}}"
-        oidc-client-secret: "{{ random_alphanumeric(20) }}"
-
-      jobs:
-        keycloak:
-          containers:
-          - name: "{{context.project.namespace}}-keycloak-projman-job"
-            image: "gempesaw/curl-jq"
-            command: ["/bin/sh", "/kc-init/update_keycloak.sh"]
-            volumeMounts:
-              - name: kc-init
-                mountPath: /kc-init
-                readOnly: true
-            env:
-              - name: CLIENT_ID
-                value: "{{context.project.oidc_client_id}}"
-              - name: KEYCLOAK_HTTP_PASSWORD
-                value: "{{context.global.keycloak_password}}"
-              - name: REDIRECT_URIS
-                value: "https://{{context.global.domain}}/{{context.project.namespace}}/*"
-              - name: CLIENT_SECRET
-                valueFrom:
-                  secretKeyRef:
-                    name: "{{context.project.namespace}}-projman-secrets"
-                    key: oidc-client-secret
-              - name: KC_URL
-                value: "https://{{context.global.domain}}/auth"
-          volumes:
-            - name: kc-init
-              configMap:
-                name: {{context.project.namespace}}-projman-configs
-                items:
-                  - key: "update_keycloak.sh"
-                    path: "update_keycloak.sh"
-
-      configs:
-        update_keycloak.sh: |
-          #!/bin/sh
-
-          # abort if any command fails
-          set -e
-          username="admin"
-
-          # get auth token
-          token=$(curl -k -s -d "client_id=admin-cli" -d "username=$username" -d "password=$KEYCLOAK_HTTP_PASSWORD" -d "grant_type=password" \
-                 "$KC_URL/realms/master/protocol/openid-connect/token" | jq -r '.access_token')
-
-          # Get ID for new browser flow
-          flowid=$(curl -X GET -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/authentication/flows" | jq -r '.[] | select(.alias=="BrowserFlowWithRoleRestrictions") | .id')
-
-          project_client=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" | \
-          jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.clientId==$CLIENT_ID)')
-
-          if [ -z "$project_client" ]
-          then
-                project_client=$(cat <<EOF
-          {
-              "clientId": "$CLIENT_ID",
-              "enabled": true,
-              "clientAuthenticatorType": "client-secret",
-              "authenticationFlowBindingOverrides":
-              {
-                "browser": "$flowid"
-              },
-              "redirectUris": ["$REDIRECT_URIS"],
-              "publicClient": false,
-              "secret": "$CLIENT_SECRET",
-              "protocol": "openid-connect",
-              "fullScopeAllowed": true,
-              "protocolMappers": [
-                  {
-                      "name": "$CLIENT_ID-audience",
-                      "protocol": "openid-connect",
-                      "protocolMapper": "oidc-audience-mapper",
-                      "consentRequired": false,
-                      "config": {
-                          "included.client.audience": "$CLIENT_ID",
-                          "id.token.claim": "false",
-                          "access.token.claim": "true"
-                      }
-                  }
-              ]
-          }
-          EOF
-                )
-
-                # add new client
-                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" -d "$project_client"
-                clientuuid=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.clientId==$CLIENT_ID) | .id')
-                roledata=$(cat <<EOF
-          {
-              "name": "$CLIENT_ID"
-          }
-          EOF
-                )
-                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients/$clientuuid/roles" -d "$roledata"
-                roleid=$(curl -k -X GET -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/clients/$clientuuid/roles" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.name==$CLIENT_ID) | .id')
-
-
-                userdata=$(cat <<EOF
-          {
-              "enabled":true,
-              "attributes":{},
-              "username":"$CLIENT_ID",
-              "emailVerified":"",
-              "email":"$CLIENT_ID@gvl.org",
-              "firstName":"$CLIENT_ID",
-              "lastName":"$CLIENT_ID"
-          }
-          EOF
-                )
-
-                # Create user for this project
-                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users" -d "$userdata"
-
-                useruuid=$(curl -k -s -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users" | jq --arg CLIENT_ID "$CLIENT_ID" -r '.[] | select(.username==$CLIENT_ID) | .id')
-
-                curl -k -X PUT -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users/$useruuid/reset-password" -d "{\"type\":\"password\",\"value\":\"changeme\",\"temporary\":true}"
-
-                rolemapping=$(cat <<EOF
-          [{
-            "id": "$roleid",
-            "name": "$CLIENT_ID",
-            "composite": false,
-            "clientRole": true,
-            "containerId": "$clientuuid"
-          }]
-          EOF
-                )
-
-                curl -k -X POST -H "Content-Type: application/json" -H "Authorization: bearer $token" "$KC_URL/admin/realms/master/users/$useruuid/role-mappings/clients/$clientuuid" -d "$rolemapping"
-          else
-                echo "The $CLIENT_ID client already exists."
-          fi
+      keycloak:
+        namespace: keycloak
+        clients:
+          {{context.project.namespace}}:
+            spec:
+              realmSelector:
+                matchLabels:
+                  app: "gvl-sso"
+              client:
+                clientId: "projman-{{context.project.namespace}}"
+                protocol: openid-connect
+                enabled: true
+                fullScopeAllowed: true
+                defaultClientScopes:
+                 - "profile"
+                 - "email"
+                 - "roles"
+                name: Client for project {{context.project.namespace}}
+                publicClient: false
+                standardFlowEnabled: true
+                redirectUris:
+                  - 'https://{{context.global.domain}}/*'
 
   galaxy:
     repo: galaxyworks
@@ -167,12 +54,19 @@ install_templates:
     template: |
       image:
         repository: galaxyworks/galaxy-pro
-        tag: 20.09.3
+        tag: 21.05.3
       persistence:
         storageClass: efs
+      initJob:
+        downloadToolConfs:
+          archives:
+            startup: https://cdn.galaxyworks.io/galaxy/tools/startup.tar.gz
+            running: https://cdn.galaxyworks.io/galaxy/tools/partial.tar.gz
+            full: https://cdn.galaxyworks.io/galaxy/tools/contents.tar.gz
       cvmfs:
         enabled: true
         deploy: false
+
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -185,19 +79,44 @@ install_templates:
       webHandlers:
         podAnnotations:
           backup.velero.io/backup-volumes: galaxy-data
+      metrics:
+        enabled: true
       resources:
         requests:
-          cpu: 300m
-          memory: 2000Mi
+          cpu: 150m
+          memory: 1.8G
         limits:
-          cpu: 3000m
-          memory: 7000Mi
+          cpu: 3
+          memory: 7G
       postgresql:
-        enabled: false
+        enabled: true
+        deploy: false
         postgresqlPassword: "{{ random_alphanumeric(10) }}"
         postgresqlPostgresPassword: "{{ random_alphanumeric(10) }}"
         operator:
           primaryUserPassword: "{{ random_alphanumeric(10) }}"
+          operatorSpecExtra:
+            enableLogicalBackup: true
+            patroni:
+              loop_wait: 30
+              retry_timeout: 120
+              ttl: 180
+            resources:
+              requests:
+                cpu: 250m
+                memory: 100Mi
+              limits:
+                cpu: "4"
+                memory: 10000Mi
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                    - "true"
+
         persistence:
           storageClass: ebs
         master:
@@ -212,6 +131,23 @@ install_templates:
                     operator: In
                     values:
                     - "true"
+      extraInitContainers:
+        - name: galaxy-pro-tools
+          applyToJob: true
+          applyToWeb: true
+          applyToWorkflow: true
+          image: galaxyworks/protools:latest
+          command:
+            - sh
+          args:
+            - -c
+            - |
+              echo "Copying pro tools..."
+              cp -R /protools/* /galaxy/server/database/tools
+              echo "done."
+          volumeMounts:
+            - name: galaxy-data
+              mountPath: /galaxy/server/database
       influxdb:
         enabled: true
         url: "{{context.global.influxdb_url}}"
@@ -224,10 +160,15 @@ install_templates:
            kubernetes.io/tls-acme: "true"
            cert-manager.io/cluster-issuer: letsencrypt-prod
            nginx.ingress.kubernetes.io/secure-backends: "true"
+           nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
         hosts:
-          - ~
+          - host: ~
+            paths:
+              - path: "{{context.project.access_path}}/galaxy"
           {%- if not (context.global.domain | ipaddr) %}
-          - "{{ context.global.domain }}"
+          - host: "{{ context.global.domain }}"
+            paths:
+              - path: "{{context.project.access_path}}/galaxy"
           {%- endif %}
         tls:
            - secretName: "{{context.global.domain | replace('.', '-') }}-key"
@@ -247,7 +188,7 @@ install_templates:
           <?xml version="1.0"?>
           <OIDC>
               <provider name="keycloak">
-                  <url>https://{{context.global.domain}}/auth/realms/master</url>
+                  <url>https://auth.{{context.global.domain}}/auth/realms/gvl</url>
                   <client_id>{{context.project.oidc_client_id}}</client_id>
                   <client_secret>{{context.project.oidc_client_secret}}</client_secret>
                   <redirect_uri>https://{{context.global.domain}}{{context.project.access_path}}/galaxy/authnz/keycloak/callback</redirect_uri>
@@ -288,11 +229,124 @@ install_templates:
             search_url: https://galaxyworks.io/
             terms_url: https://galaxyworks.io/
             qa_url: https://galaxyworks.io/
+            quota_url: null
             allow_user_creation: false
             enable_beta_gdpr: true
             enable_tool_tags: true
-            tool_config_file: "/galaxy/server/config/shed_tool_conf.xml,/galaxy/server/config/tool_conf.xml"
-        tool_conf.xml: ""
+            enable_beta_markdown_export: true
+            tool_config_file: "{{ '{{' }} .Values.initJob.downloadToolConfs.volume.mountPath {{ '}}' }}/config/shed_tool_conf.xml,/galaxy/server/config/pro_tool_conf.xml,/galaxy/server/config/instance_tool_conf.xml"
+        pro_tool_conf.xml: |
+          <?xml version="1.0"?>
+          <toolbox>
+              <section id="get_data" name="Get Data" version="">
+                  <tool file="data_source/upload.xml" />
+                  <tool file="data_source/ucsc_tablebrowser.xml" />
+              </section>
+              <section id="send_data" name="Send Data" version="">
+                  <tool file="advaita_API/advaita_send_DE_data.xml" />
+                  <tool file="advaita_API/advaita_send_VCF_data.xml" />
+              </section>
+              <section id="collection_operations" name="Collection Operations" version="">
+                  <tool file="${model_tools_path}/unzip_collection.xml" />
+                  <tool file="${model_tools_path}/zip_collection.xml" />
+                  <tool file="${model_tools_path}/filter_failed_collection.xml" />
+                  <tool file="${model_tools_path}/filter_empty_collection.xml" />
+                  <tool file="${model_tools_path}/flatten_collection.xml" />
+                  <tool file="${model_tools_path}/merge_collection.xml" />
+                  <tool file="${model_tools_path}/relabel_from_file.xml" />
+                  <tool file="${model_tools_path}/filter_from_file.xml" />
+                  <tool file="${model_tools_path}/sort_collection_list.xml" />
+                  <tool file="${model_tools_path}/tag_collection_from_file.xml" />
+                  <tool file="${model_tools_path}/apply_rules.xml" />
+                  <tool file="${model_tools_path}/build_list.xml" />
+                  <tool file="${model_tools_path}/extract_dataset.xml" />
+              </section>
+              <section id="expression_tools" name="Expression Tools">
+                  <tool file="expression_tools/parse_values_from_file.xml" />
+              </section>
+              <label id="general_text_label" text="General Text Tools" version="" />
+              <section id="text_manipulation" name="Text Manipulation" version="">
+                  <tool file="filters/fixedValueColumn.xml" />
+                  <tool file="filters/catWrapper.xml" />
+                  <tool file="filters/condense_characters.xml" />
+                  <tool file="filters/convert_characters.xml" />
+                  <tool file="filters/mergeCols.xml" />
+                  <tool file="filters/CreateInterval.xml" />
+                  <tool file="filters/cutWrapper.xml" />
+                  <tool file="filters/changeCase.xml" />
+                  <tool file="filters/pasteWrapper.xml" />
+                  <tool file="filters/remove_beginning.xml" />
+                  <tool file="filters/randomlines.xml" />
+                  <tool file="filters/headWrapper.xml" />
+                  <tool file="filters/tailWrapper.xml" />
+                  <tool file="filters/trimmer.xml" />
+                  <tool file="filters/wc_gnu.xml" />
+                  <tool file="filters/secure_hash_message_digest.xml" />
+              </section>
+              <section id="filter_and_sort" name="Filter and Sort" version="">
+                  <tool file="stats/filtering.xml" />
+                  <tool file="filters/sorter.xml" />
+                  <tool file="filters/grep.xml" />
+                  <label id="gff" text="GFF" />
+                  <tool file="filters/gff/extract_GFF_Features.xml" />
+                  <tool file="filters/gff/gff_filter_by_attribute.xml" />
+                  <tool file="filters/gff/gff_filter_by_feature_count.xml" />
+                  <tool file="filters/gff/gtf_filter_by_attribute_values_list.xml" />
+                  <tool file="migrate_index_read/migrate_index_read.xml" />
+              </section>
+              <section id="join_subtract_and_group" name="Join, Subtract and Group" version="">
+                  <tool file="filters/joiner.xml" />
+                  <tool file="filters/compare.xml" />
+                  <tool file="stats/grouping.xml" />
+              </section>
+              <section id="convert_formats" name="Convert Formats" version="">
+                  <tool file="filters/bed2gff.xml" />
+                  <tool file="filters/gff2bed.xml" />
+                  <tool file="maf/maf_to_bed.xml" />
+                  <tool file="maf/maf_to_interval.xml" />
+                  <tool file="maf/maf_to_fasta.xml" />
+                  <tool file="filters/sff_extractor.xml" />
+                  <tool file="filters/wig_to_bigwig.xml" />
+                  <tool file="filters/bed_to_bigbed.xml" />
+              </section>
+              <section id="nanopore" name="Nanopore" version="">
+                  <tool file="bonito/bonito_basecaller.xml" />
+              </section>
+              <label id="common_genomics_tools_label" text="Common Genomics Tools" version="" />
+              <section id="operate_on_genomic_intervals" name="Operate on Genomic Intervals" version="">
+                  <tool file="filters/wiggle_to_simple.xml" />
+                  <tool file="stats/aggregate_binned_scores_in_intervals.xml" />
+                  <tool file="filters/ucsc_gene_bed_to_exon_bed.xml" />
+              </section>
+              <section id="fetch_sequences_alignments" name="Fetch Sequences/Alignments" version="">
+                  <tool file="extract/extract_genomic_dna.xml" />
+                  <tool file="maf/interval2maf_pairwise.xml" />
+                  <tool file="maf/interval2maf.xml" />
+                  <tool file="maf/interval_maf_to_merged_fasta.xml" />
+                  <tool file="maf/genebed_maf_to_fasta.xml" />
+                  <tool file="maf/maf_stats.xml" />
+                  <tool file="maf/maf_thread_for_species.xml" />
+                  <tool file="maf/maf_limit_to_species.xml" />
+                  <tool file="maf/maf_limit_size.xml" />
+                  <tool file="maf/maf_by_block_number.xml" />
+                  <tool file="maf/maf_reverse_complement.xml" />
+                  <tool file="maf/maf_filter.xml" />
+              </section>
+              <section id="statistics" name="Statistics" version="">
+                  <tool file="stats/gsummary.xml" />
+                  <tool file="filters/uniq.xml" />
+              </section>
+              <section id="graph_display_data" name="Graph/Display Data" version="">
+                  <tool file="plotting/boxplot.xml" hidden="true"/>
+                  <tool file="maf/vcf_to_maf_customtrack.xml" />
+                  <tool file="pygenometracks/pyGenomeTracks_custom.xml" />
+                  <tool file="frequency_reference_per_base/frequency_reference_per_base.xml" />
+              </section>
+          </toolbox>
+        instance_tool_conf.xml: |
+          <?xml version="1.0"?>
+          <toolbox>
+          </toolbox>
         integrated_tool_panel.xml: |
           <?xml version="1.0"?>
           <toolbox>
@@ -381,53 +435,37 @@ install_templates:
               <section id="ncbi_blast_" name="NCBI BLAST+" version="">
               </section>
           </toolbox>
-        job_conf.xml: |
-          <job_conf>
-              <plugins>
-                  <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="4" />
-                  <plugin id="k8s" type="runner" load="galaxy.jobs.runners.kubernetes:KubernetesJobRunner">
-                    <param id="k8s_use_service_account">true</param>
-                    <param id="k8s_persistent_volume_claims">{{ '{{' }} template "galaxy.pvcname" . {{ '}}' }}:{{ '{{' }}.Values.persistence.mountPath{{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-data-pvc:{{ '{{' }} .Values.cvmfs.data.mountPath {{ '}}' }},{{ '{{' }} template "galaxy.fullname" . {{ '}}' }}-cvmfs-gxy-main-pvc:{{ '{{' }} .Values.cvmfs.main.mountPath {{ '}}' }}</param>
-                    <param id="k8s_namespace">{{ '{{' }} .Release.Namespace {{ '}}' }}</param>
-                    <!-- Must be DNS friendly and less than 20 characters -->
-                    <param id="k8s_galaxy_instance_id">{{ '{{' }} .Release.Name {{ '}}' }}</param>
-                    <param id="k8s_run_as_user_id">101</param>
-                    <param id="k8s_run_as_group_id">101</param>
-                    <param id="k8s_fs_group_id">101</param>
-                    <param id="k8s_supplemental_group_id">101</param>
-                    <param id="k8s_pull_policy">IfNotPresent</param>
-                    <param id="k8s_cleanup_job">always</param>
-                    <param id="k8s_pod_priority_class">{{ '{{' }} include "galaxy.fullname" . {{ '}}' }}-job-priority</param>
-                    <param id="k8s_affinity">
-                      nodeAffinity:
-                        requiredDuringSchedulingIgnoredDuringExecution:
-                          nodeSelectorTerms:
-                          - matchExpressions:
-                            - key: node-role.kubernetes.io/master
-                              operator: NotIn
-                              values:
-                              - "true"
-                            - key: node-role.kubernetes.io/etcd
-                              operator: NotIn
-                              values:
-                              - "true"
-                    </param>
-                  </plugin>
-              </plugins>
-              <destinations default="dynamic-k8s-dispatcher">
-                  <destination id="local" runner="local"/>
-                  <destination id="dynamic-k8s-dispatcher" runner="dynamic">
-                    <param id="type">python</param>
-                    <param id="function">k8s_container_mapper</param>
-                    <param id="docker_default_container_id">{{ '{{' }} .Values.image.repository {{ '}}' }}:{{ '{{' }} .Values.image.tag {{ '}}' }}</param>
-                    <param id="docker_enabled">true</param>
-                  </destination>
-              </destinations>
-              <limits>
-                  <limit type="registered_user_concurrent_jobs">10</limit>
-                  <limit type="anonymous_user_concurrent_jobs">0</limit>
-              </limits>
-          </job_conf>
+        job_conf.yml:
+          runners:
+            k8s:
+              k8s_cleanup_job: always
+              k8s_walltime_limit: 604800
+              k8s_unschedulable_walltime_limit: 604800
+              k8s_job_metadata: |
+                labels:
+                  usegalaxy.org/cm_autoscaling_group: "default"
+              k8s_affinity: |
+                nodeAffinity:
+                  requiredDuringSchedulingIgnoredDuringExecution:
+                    nodeSelectorTerms:
+                    - matchExpressions:
+                      - key: node-role.kubernetes.io/master
+                        operator: NotIn
+                        values:
+                        - "true"
+                      - key: node-role.kubernetes.io/etcd
+                        operator: NotIn
+                        values:
+                        - "true"
+          execution:
+            environments:
+              dynamic_k8s_dispatcher:
+                tmp_dir: "true"
+          limits:
+          - type: registered_user_concurrent_jobs
+            value: 30
+          - type: anonymous_user_concurrent_jobs
+            value: 0
       extraFileMappings:
         /galaxy/server/static/welcome.html:
           useSecret: false
@@ -478,59 +516,96 @@ install_templates:
         rules:
           container_mapper_rules.yml: |
             mappings:
-              - tool_ids:
+              make_families:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/nick/dunovo/make_families/.*
+                docker_container_id_override: galaxyworks/make_families:2.15
+                resource_set: 1c2m
+              align_families:
+                  tool_ids:
+                    - toolshed.g2.bx.psu.edu/repos/nick/dunovo/align_families/.*
+                    - toolshed.g2.bx.psu.edu/repos/nick/dunovo/dunovo/.*
+                  docker_container_id_override: quay.io/biocontainers/dunovo:2.15--py27h3dcb392_3
+                  resource_set: 1c2m
+              barcode:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/nick/dunovo/correct_barcodes/.*
+                docker_container_id_override: galaxyworks/correct_barcodes:2.15
+                resource_set: 1c2m
+              deeptools_bam_coverage_custom:
+                tool_ids:
+                  - deeptools_bam_coverage_custom
+                docker_container_id_override: galaxyworks/deeptools_bam_coverage_custom:3.5.1
+                resource_set: 1c2m
+              summary_stats:
+                tool_ids:
                   - Summary_Statistics1
-                container:
-                  docker_container_id_override: galaxyworks/gsummary:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/gsummary:1.0.0
+                resource_set: 1c2m
+              frequency_reference_per_base:
+                tool_ids:
+                  - frequency_reference_per_base
+                docker_container_id_override: galaxyworks/frequency_reference_per_base:1.3
+                resource_set: 1c2m
+              guppy:
+                tool_ids:
+                  - guppy
+                docker_container_id_override: gwks/guppy:4.2.2
+                resource_set: 1c2m
+              bonito:
+                tool_ids:
+                  - bonito_basecaller
+                docker_container_id_override: galaxyworks/samtools-bonito:0.3.0
+                resource_set: 3c14m
+              sam_fasta_index_builder:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_sam_fasta_index_builder/sam_fasta_index_builder/.*
-                container:
-                  docker_container_id_override: galaxyworks/sam-fasta-dm:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/sam-fasta-dm:1.0.0
+                resource_set: 1c2m
+              bwa_mem_index_builder_data_manager:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/devteam/data_manager_bwa_mem_index_builder/bwa_mem_index_builder_data_manager/.*
-                container:
-                  docker_container_id_override: galaxyworks/bwa-dm:1.0.0
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: galaxyworks/bwa-dm:1.0.0
+                resource_set: 1c2m
+              pygenomeTracks:
+                tool_ids:
                   - pyGenomeTracks
                   - toolshed.g2.bx.psu.edu/repos/iuc/pygenometracks/pygenomeTracks/*
-                container:
-                  docker_container_id_override: galaxyworks/pygenometracks:latest
-                  resource_set: small
-              - tool_ids:
+                  - visualize_coverage
+                docker_container_id_override: galaxyworks/pygenometracks:latest
+                resource_set: 1c2m
+              galaxy_container_tools:
+                tool_ids:
                   - sort1
                   - Grouping1
-                container:
-                  docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
-                  resource_set: small
-              - tool_ids:
+                  - report_generation
+                  - migrate_index_read
+                docker_container_id_override: "{{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}"
+                resource_set: 1c2m
+              param_value_from_file:
+                tool_ids:
                   - param_value_from_file
-                container:
-                  docker_container_id_override: cloudve/param_value_from_file:latest
-                  resource_set: small
-              - tool_ids:
+                docker_container_id_override: cloudve/param_value_from_file:latest
+                resource_set: 1c2m
+              customviztools:
+                tool_ids:
                   - read_mapping_viz
                   - snp_substitution_viz
                   - variant_summary_viz
-                container:
-                  docker_container_id_override: galaxyworks/customviztools:1.0.0
-                  resource_set: small
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
+                docker_container_id_override: galaxyworks/customviztools:1.0.0
+                resource_set: 1c2m
+              2c4m:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/bwameth/bwameth/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/featurecounts/featurecounts/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/hisat2/hisat2/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/valet/valet/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/varscan_somatic/varscan_somatic/.*
                   - toolshed.g2.bx.psu.edu/repos/nilesh/rseqc/rseqc_bam2wig/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/snippy/snippy/.*
-                container:
-                  resource_set: medium
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
-                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
+                resource_set: 2c4m
+              3c7m:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_compare/deeptools_bam_compare/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_coverage/deeptools_bam_coverage/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_bam_pe_fragmentsize/deeptools_bam_pe_fragmentsize/.*
@@ -541,72 +616,181 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bam_summary/deeptools_multi_bam_summary/.*
                   - toolshed.g2.bx.psu.edu/repos/bgruening/deeptools_multi_bigwig_summary/deeptools_multi_bigwig_summary/.*
                   - toolshed.g2.bx.psu.edu/repos/devteam/freebayes/freebayes/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_flagstat/samtools_flagstat/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/samtools_idxstats/samtools_idxstats/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline/medaka_variant_pipeline/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/nanoplot/nanoplot/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/qualimap_bamqc/qualimap_bamqc/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/rgrnastar/rna_star/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
+                resource_set: 3c7m
+              porechop:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus/medaka_consensus/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_consensus_pipeline/medaka_consensus_pipeline/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant/medaka_variant/.*
-                  - toolshed.g2.bx.psu.edu/repos/iuc/medaka_variant_pipeline//medaka_variant_pipeline/.*
-                container:
-                  resource_set: large
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
-                  - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
-                container:
-                  resource_set: 2xlarge
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
-                container:
-                  resource_set: 2xlarge
-                  docker_container_id_override: galaxyworks/rna_starsolo:rev_9
-              - tool_ids:
-                  - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                resource_set: 3c14m
+              12c20m:
+                tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
+                  - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
+                resource_set: 12c20m
+              7c15m:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_image/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/bandage/bandage_info/.*
-                container:
-                  resource_set: mlarge
-              - tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/minimap2/minimap2/.*
+                resource_set: 7c15m
+              31c124m:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
+                  - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
+                resource_set: 31c124m
+              rna_starsolo:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
+                resource_set: 12c20m
+                docker_container_id_override: galaxyworks/rna_starsolo:rev_9
+              advaita:
+                tool_ids:
                   - advaita_send_DE_data
                   - advaita_send_VCF_data
-                container:
-                  docker_container_id_override: {{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}
+                docker_container_id_override: "{{ '{{' }} .Values.image.repository {{ '}}:{{' }} .Values.image.tag {{ '}}' }}"
+              bam_converters:
+                tool_ids:
+                  - CONVERTER_bam_to_bigwig_0
+                docker_container_id_override: quay.io/biocontainers/mulled-v2-1c6be8ad49e4dfe8ab70558e8fb200d7b2fd7509:5900b4e68c4051137fffd99165b00e98f810acae-0
             resources:
               resource_sets:
-                small:
+                1c2m:
                   requests:
-                    cpu: 1
-                    memory: 2G
+                      cpu: 1
+                      memory: 2G
                   limits:
-                    cpu: 2
-                    memory: 5G
-                medium:
+                      cpu: 2
+                      memory: 4G
+                2c4m:
                   requests:
-                    cpu: 2
-                    memory: 4G
+                      cpu: 2
+                      memory: 4G
                   limits:
-                    cpu: 4
-                    memory: 10G
-                large:
+                      cpu: 3
+                      memory: 7G
+                3c7m:
                   requests:
-                    cpu: 4
-                    memory: 8G
+                      cpu: 3
+                      memory: 7G
                   limits:
-                    cpu: 8
-                    memory: 16G
-                2xlarge:
+                      cpu: 4
+                      memory: 15G
+                3c14m:
                   requests:
-                    cpu: 12
-                    memory: 20G
+                      cpu: 3
+                      memory: 14G
                   limits:
-                    cpu: 12
-                    memory: 24G
-                mlarge:
+                      cpu: 4
+                      memory: 15G
+                7c15m:
                   requests:
-                    cpu: 2
-                    memory: 16G
+                      cpu: 7
+                      memory: 15G
                   limits:
-                    cpu: 4
-                    memory: 20G
-              default_resource_set: small
+                      cpu: 8
+                      memory: 20G
+                12c20m:
+                  requests:
+                      cpu: 12
+                      memory: 20G
+                  limits:
+                      cpu: 12
+                      memory: 24G
+                31c124m:
+                  requests:
+                      cpu: 31
+                      memory: 124G
+                  limits:
+                      cpu: 31
+                      memory: 124G
+              default_resource_set: 1c2m
+
+  proportal:
+    repo: galaxyworks
+    chart: pro-portal
+    display_name: Pro Portal
+    summary: For internal use only
+    context:
+      oidc_client_id:
+      oidc_client_secret:
+      stripe_live_mode:
+      stripe_public:
+      stripe_secret:
+      stripe_webhook:
+      secret_key:
+      db_password:
+      galaxy_handshake:
+    template: |
+      image:
+        pullPolicy: Always
+
+      configPortal:
+        oidcIssuer: "https://auth.{{context.global.domain}}/auth/realms/gvl"
+        oidcClientId: "{{context.oidc_client_id}}"
+        oidcClientSecret: "{{context.oidc_client_secret}}"
+        stripeLiveMode: "{{context.stripe_live_mode}}"
+        stripePublic: "{{context.stripe_public}}"
+        stripeSecret: "{{context.stripe_secret}}"
+        stripeWebhook: "{{context.stripe_webhook}}"
+        secretKey: "{{context.secret_key}}"
+        galaxyHandshake: "{{context.galaxy_handshake}}"
+
+      postgresql:
+        dbPassword: "{{context.db_password}}"
+        persistence:
+          size: 10Gi
+        operator:
+          operatorSpecExtra:
+            enableLogicalBackup: true
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                    - "true"
+
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: In
+                values:
+                - "true"
+
+      galaxy:
+        postgresql:
+          dbClusterName: "galaxy-galaxy-galaxy-postgres"
+          existingSecretName: "galaxydbuser.galaxy-galaxy-galaxy-postgres.credentials.postgresql.acid.zalan.do"
+          existingSecretKey: "password"
+
+      ingress:
+        enabled: true
+        annotations:
+           kubernetes.io/tls-acme: "true"
+           cert-manager.io/cluster-issuer: letsencrypt-prod
+           nginx.ingress.kubernetes.io/secure-backends: "true"
+        hosts:
+          - host: "portal.galaxyworks.io"
+            paths:
+              - "/"
+        tls:
+           - secretName: "portal-galaxyworks-io-key"
+             hosts:
+               - "portal.galaxyworks.io"
+        access_path: "https://portal.galaxyworks.io/"
