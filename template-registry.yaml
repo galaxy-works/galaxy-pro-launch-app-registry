@@ -121,7 +121,15 @@ install_templates:
           storageClass: ebs
         master:
           podAnnotations:
-            backup.velero.io/backup-volumes: data
+            backup.velero.io/backup-volumes: backup
+            pre.hook.backup.velero.io/command: '["/bin/bash", "-c", "PGPASSWORD=$POSTGRES_PASSWORD pg_dump -U postgres -d galaxy -h 127.0.0.1 > /scratch/backup.sql"]'
+            pre.hook.backup.velero.io/timeout: 60m
+          extraVolumes:
+            - name: backup
+              emptyDir: {}
+          extraVolumeMounts:
+            - name: backup
+              mountPath: /scratch
           affinity:
             nodeAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
