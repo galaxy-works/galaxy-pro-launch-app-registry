@@ -729,7 +729,6 @@ install_templates:
       stripe_public:
       stripe_secret:
       stripe_webhook:
-      stripe_price_id:
       secret_key:
       db_password:
       galaxy_handshake:
@@ -745,7 +744,6 @@ install_templates:
         stripePublic: "{{context.stripe_public}}"
         stripeSecret: "{{context.stripe_secret}}"
         stripeWebhook: "{{context.stripe_webhook}}"
-        stripePriceId: "{{context.stripe_price_id}}"
         secretKey: "{{context.secret_key}}"
         galaxyHandshake: "{{context.galaxy_handshake}}"
 
