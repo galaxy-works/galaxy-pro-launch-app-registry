@@ -650,10 +650,10 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
                   - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
                 resource_set: 31c124m
-              31c254m:
+              16c240m:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*
-                resource_set: 31c254m
+                resource_set: 16c240m
               rna_starsolo:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
@@ -719,13 +719,13 @@ install_templates:
                   limits:
                       cpu: 31
                       memory: 124G
-                31c254m:
+                16c240m:
                   requests:
-                      cpu: 31
-                      memory: 254G
+                      cpu: 16
+                      memory: 240G
                   limits:
-                      cpu: 31
-                      memory: 254G
+                      cpu: 16
+                      memory: 240G
               default_resource_set: 1c2m
   proportal:
     repo: galaxyworks
