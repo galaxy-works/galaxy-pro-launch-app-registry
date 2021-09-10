@@ -633,6 +633,10 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/sra_tools/fasterq_dump/.*
                 resource_set: 3c7m
+              10c90m:
+                tool_ids:
+                  - toolshed.g2.bx.psu.edu/repos/iuc/rnaspades/rnaspades/.*
+                resource_set: 10c90m
               porechop:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/porechop/porechop/.*
@@ -655,10 +659,12 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/devteam/bwa/bwa_mem/.*
                   - toolshed.g2.bx.psu.edu/repos/devteam/bowtie2/bowtie2/.*
                 resource_set: 31c124m
-              16c240m:
+              24c240m:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/trinity/trinity/.*
-                resource_set: 16c240m
+                  - toolshed.g2.bx.psu.edu/repos/iuc/busco/busco/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/rnaquast/rna_quast/.*
+                resource_set: 24c240m
               rna_starsolo:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/iuc/rna_starsolo/rna_starsolo/*
@@ -710,6 +716,13 @@ install_templates:
                   limits:
                       cpu: 8
                       memory: 20G
+                10c90m:
+                  requests:
+                      cpu: 10
+                      memory: 90G
+                  limits:
+                      cpu: 10
+                      memory: 90G
                 12c20m:
                   requests:
                       cpu: 12
@@ -724,12 +737,12 @@ install_templates:
                   limits:
                       cpu: 31
                       memory: 124G
-                16c240m:
+                24c240m:
                   requests:
-                      cpu: 16
+                      cpu: 24
                       memory: 240G
                   limits:
-                      cpu: 16
+                      cpu: 24
                       memory: 240G
               default_resource_set: 1c2m
   proportal:
