@@ -516,6 +516,11 @@ install_templates:
         rules:
           container_mapper_rules.yml: |
             mappings:
+              bw_header:
+                tool_ids:
+                  - bw_header
+                 docker_container_id_override: galaxyworks/bw_header:0.1
+                 resource_set: 1c2m
               make_families:
                 tool_ids:
                   - toolshed.g2.bx.psu.edu/repos/nick/dunovo/make_families/.*
