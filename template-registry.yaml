@@ -54,7 +54,7 @@ install_templates:
     template: |
       image:
         repository: galaxyworks/galaxy-pro
-        tag: 21.05.4
+        tag: 21.05.5
       persistence:
         storageClass: efs
       initJob:
