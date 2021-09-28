@@ -79,6 +79,9 @@ install_templates:
       webHandlers:
         podAnnotations:
           backup.velero.io/backup-volumes: galaxy-data
+      jobHandlers:
+        readinessProbe:
+          enabled: false
       metrics:
         enabled: true
       resources:
