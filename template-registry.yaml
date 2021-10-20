@@ -644,6 +644,7 @@ install_templates:
                   - toolshed.g2.bx.psu.edu/repos/bgruening/flye/flye/.*
                   - toolshed.g2.bx.psu.edu/repos/nml/spades/spades/.*
                   - toolshed.g2.bx.psu.edu/repos/iuc/unicycler/unicycler/.*
+                  - toolshed.g2.bx.psu.edu/repos/iuc/umi_tools.*
                 resource_set: 12c20m
               7c15m:
                 tool_ids:
